@@ -1,0 +1,121 @@
+% This conference manuscript template is prepared for:   
+% Kim Stockment, Conference Coordinator, Ray W. Herrick Laboratories, Purdue University, West Lafayette, IN, USA. 
+% Latest revision = 2016-02-23 
+
+\documentclass[10pt]{extarticle}
+% Miktex users: require l3 packages
+%             : optional 3 packages
+\usepackage{amssymb,amsmath,multicol,titlesec,apacite,booktabs,tabto,url}
+%\usepackage[round]{natbib}  
+
+\usepackage[hmargin = 1in, vmargin = 1in]{geometry}
+
+\renewcommand{\refname}{References}
+    
+%\usepackage[MnSymbol]{mathspec}
+%\setallmainfonts{Times New Roman}
+% Mathspec requires the XeTeX compiler. 
+
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage[font=bf]{caption}
+
+\usepackage{titlesec} 
+%\titleformat{command}[shape]{format}{label}{sep}{before}[after]
+\titleformat{\section}[hang]{\fontsize{12pt}{1em}\selectfont \bfseries}{\thesection. }{0pt}{\centering \MakeUppercase}
+\titleformat{\subsection}[hang]{\fontsize{11pt}{1em}\selectfont \bfseries}{\thesubsection}{5pt}{}
+\titleformat{\subsubsection}[runin]{}{\thesubsubsection}{5pt}{} 
+%\titlespacing{command}{left}{beforesep}{aftersep}[right]
+\titlespacing{\section}{0pt}{10pt}{10pt}
+\titlespacing{\subsection}{0pt}{10pt}{0pt}
+\titlespacing{\subsubsection}{0pt}{10pt}{0pt}	
+%\setlength{\bibsep}{3pt}
+%\pagenumbering{\gobble}
+%\setlength{\hyphenpenalty}{1000}
+%\setlength{\exhyphenpenalty}{1000}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead[R]{\fontsize{12pt}{1em}\selectfont {\textbf {\textit 1\#\#\#}, {\textbf{Page \thepage}}}}
+\fancyhead[L]{}
+\fancyfoot[C]{5\textsuperscript{th} International High Performance Buildings Conference at Purdue, July 9-12, 2018}
+\renewcommand{\headrulewidth}{0pt} % Turn off the bar
+
+\newcommand\thefontsize[1]{{#1 The current font size is: \f@size pt\par}}
+
+\begin{document}
+	
+\begin{center}
+\vspace{0.2in}
+\noindent{\fontsize{14pt}{1em}\selectfont \textbf{MPC formulation description template}}\\[14pt]
+
+{\fontsize{11pt}{1.2em}\selectfont
+Iago CUPEIRO FIGUEROA, Ján DRGONA
+\\[11pt]
+\textsuperscript{1} KU Leuven\\
+Department of Mechanical Engineering - TME Division\\
+The Sysi's \\[11pt]
+}
+\end{center}
+
+\vfill
+
+
+\section*{ABSTRACT}
+
+The first major section of the manuscript is an abstract.  The abstract should describe the contents of the paper, discuss the contribution to the field as well as present the most important results.  Authors are responsible for typing accuracy and proofreading the manuscript.  If accepted, the manuscript must be submitted for reproduction without being edited or retyped by the staff before printing.  The manuscript must look professional and be technically correct in order to be accepted. 
+
+\section{CONTROL ENGINEERING NOTATION}
+
+Each manuscript should begin with an introduction that gives some background on the topic and briefly states the objective of the paper and how it relates to other works in the field.  The manuscripts should report original research or technical developments and their applications.  They should contain quality scientific or technical information.  Manuscripts of a commercial nature will be rejected and will not be authorized for presentation.  The process of acceptance or rejection of papers will be under the authority of the Conference Organizing Committee.  The Organizing Committee will not be held responsible for any errors appearing in the final text.  Authors assume sole responsibility for their manuscript, both for its form and its substance.  Remember to check over the manuscript carefully before submission.  The manuscript should be submitted by only one author. \textbf{Once submitted, no changes to the manuscript will be accepted.} 
+
+\section{MPC FORMULATION IN BUILDINGS: GRANTING A PHYSICAL MEANING }
+
+The titles of the main sections have to be centered, numbered and in \textbf{12-point bold type} CAPITAL LETTERS.  With the exception of the abstract, nomenclature, references, and acknowledgments section headings have to be numbered. Blank lines need to be placed above and below each main section title.
+
+\begin{table}[b]
+% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
+\centering
+\caption{Page margins for manuscripts}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Page Size} & \textbf{Top} & \textbf{Bottom} & \textbf{Left} & \textbf{Right} \\ 
+\midrule 
+U.S. Standard Letter & 1 inch (2.54 cm) & 1 inch (2.54 cm) & 1 inch (2.54 cm) & 1 inch (2.54 cm) \\ 
+\bottomrule 
+\end{tabular}
+\end{table} 
+
+
+\section*{NOMENCLATURE}
+
+The nomenclature should be located at the end of the text using the following format:\\
+\begin{samepage}
+A\tabto{1.0in}hotel cost\tabto{2.5in}(US\$/night)	\\
+C\tabto{1.0in}total cost\tabto{2.5in}(US\$)	\\
+F\tabto{1.0in}conference fee\tabto{2.5in}(US\$)\\	
+N\tabto{1.0in}number\tabto{2.5in}(–)
+
+\end{samepage}
+\begin{samepage}
+\textbf{Subscript}\\
+n\tabto{1.0in}nights	\\
+p\tabto{1.0in}participants
+\end{samepage}
+
+\bibliographystyle{apacite}
+\bibliography{template}
+\vspace{24pt}
+\emph{References} are to be placed at the end of the manuscript in alphabetical order by the last name of the first author.  All sources cited in the text have to be listed in the list of references in alphabetical order of the author's name or of the lead author's name if there are several authors at the end of the manuscript.  The sources should be listed in the standard APA (American Psychological Association) style.  The \texttt{apacite} package will format references in the APA style. 
+
+Examples of APA style citations for other print and electronic sources can be found on the Purdue OWL website, \url{https://owl.english.purdue.edu/owl/resource/560/1/}.
+
+The American Psychological Association maintains a blog where detailed instructions, commentary, and examples for citing different sources are provided: \url{http://blog.apastyle.org/apastyle/}.
+
+Standard abbreviations for periodicals and journals can be found on Web of Science maintained by Thomson Reuters: \url{https://images.webofknowledge.com/WOK46/help/WOS/A_abrvjt.html}.  
+
+\section*{ACKNOWLEDGMENTS}
+
+An acknowledgment can be located at the end of the text to indicate the sponsor of the study presented and/or to acknowledge additional contributors to the paper. 
+
+\end{document}
