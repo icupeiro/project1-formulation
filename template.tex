@@ -36,9 +36,9 @@
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\fancyhead[R]{\fontsize{12pt}{1em}\selectfont {\textbf {\textit 1\#\#\#}, {\textbf{Page \thepage}}}}
+\fancyhead[R]{\fontsize{12pt}{1em}\selectfont {{\textbf{Page \thepage}}}}
 \fancyhead[L]{}
-\fancyfoot[C]{5\textsuperscript{th} International High Performance Buildings Conference at Purdue, July 9-12, 2018}
+\fancyfoot[C]{IBPSA Project 1, September 2018}
 \renewcommand{\headrulewidth}{0pt} % Turn off the bar
 
 \newcommand\thefontsize[1]{{#1 The current font size is: \f@size pt\par}}
@@ -50,24 +50,63 @@
 \noindent{\fontsize{14pt}{1em}\selectfont \textbf{MPC formulation description template}}\\[14pt]
 
 {\fontsize{11pt}{1.2em}\selectfont
-Iago CUPEIRO FIGUEROA, Ján DRGONA
+Iago Cupeiro Figueroa\textsuperscript{1}, J\'an Drgo\v na\textsuperscript{2}
 \\[11pt]
-\textsuperscript{1} KU Leuven\\
+
+KU Leuven\\
 Department of Mechanical Engineering - TME Division\\
 The Sysi's \\[11pt]
+
+iago.cupeirofigueroa@kuleuven.be\textsuperscript{1}, jan.drgona@kuleuven.be\textsuperscript{2} \\
 }
 \end{center}
 
-\vfill
+\vspace{0.5cm}
 
 
 \section*{ABSTRACT}
 
-The first major section of the manuscript is an abstract.  The abstract should describe the contents of the paper, discuss the contribution to the field as well as present the most important results.  Authors are responsible for typing accuracy and proofreading the manuscript.  If accepted, the manuscript must be submitted for reproduction without being edited or retyped by the staff before printing.  The manuscript must look professional and be technically correct in order to be accepted. 
+This document contains the MPC formulation template within the frame of the IBPSA Project 1.
+The proposed template has to adapt all possible formulations for the different types of model and key performance indicators (KPIs) in consideration.
+It has to be general.
+To this end, we choose the control engineering notation as our starting point,
+since it considers the formulation in a general way from an abstract point of view.
+From here, we aim to move to a more physical formulation based on the particularities and specific characteristics of the building sector.
 
 \section{CONTROL ENGINEERING NOTATION}
 
-Each manuscript should begin with an introduction that gives some background on the topic and briefly states the objective of the paper and how it relates to other works in the field.  The manuscripts should report original research or technical developments and their applications.  They should contain quality scientific or technical information.  Manuscripts of a commercial nature will be rejected and will not be authorized for presentation.  The process of acceptance or rejection of papers will be under the authority of the Conference Organizing Committee.  The Organizing Committee will not be held responsible for any errors appearing in the final text.  Authors assume sole responsibility for their manuscript, both for its form and its substance.  Remember to check over the manuscript carefully before submission.  The manuscript should be submitted by only one author. \textbf{Once submitted, no changes to the manuscript will be accepted.} 
+General MPC formulation can be cast as a following optimal control problem (OCP) in discrete time
+\begin{subequations}
+	\label{eq:mpc_general_formal}
+	\begin{align}
+	\min_{u_0, \ldots, u_{N-1}} & \ell_N(x_N) + \sum_{k=0}^{N-1} \ell(x_k, y_k, u_k) &
+	\label{eq:mpc_general_formal:cost}\\
+	\text{s.t.} \ & x_{k+1} = f(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:xp} \\
+	& y_{k} = g(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:yp} \\
+	&  x_{k} \in \mathcal{X},  & k \in \mathbb{N}_{0}^{N-1}   \label{eq:mpc_general_formal:ub}\\
+	& u_{k} \in \mathcal{U}, & k \in \mathbb{N}_{0}^{N-1} 
+	\label{eq:mpc_general_formal:xb}\\
+	%   & \underline{x} \le x_k \le \overline{x}, \label{eq:mpc_general_formal:xb}\\
+	%   & \underline{u} \le u_k \le \overline{u}, \label{eq:mpc_general_formal:ub}\\
+	& x_0 = x(t),\label{eq:mpc_general_formal:x0} \\
+	& d_0 = d(t),\label{eq:mpc_general_formal:d0}
+	\end{align}
+\end{subequations}
+where $x_k \in \mathbb{R}^{n_x}$, $y_k \in \mathbb{R}^{n_y}$, $u_k \in \mathbb{R}^{n_u}$ and $d_k \in \mathbb{R}^{n_d}$ denote the values of states, outputs,
+inputs and disturbances, respectively, at the $k$-th step of the prediction
+horizon $N$. 
+Objective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty,
+while $\ell(x_k,u_k)$  is called a stage cost and its
+purpose is to assign a cost to a particular choice of $x_k$ and
+$u_k$.
+The predictions of the state values are obtained from the state update equation~\eqref{eq:mpc_general_formal:xp}, while values of the predicted outputs are given by
+the output equation~\eqref{eq:mpc_general_formal:yp}.
+States and inputs are subject to
+constraints~\eqref{eq:mpc_general_formal:ub} and~\eqref{eq:mpc_general_formal:xb}.
+Initial conditions of the problem are given by~\eqref{eq:mpc_general_formal:x0} for the state variables which are either  measured or estimated, and by~\eqref{eq:mpc_general_formal:d0} for the disturbances which are measured for the current timestep and forecasted for the future.
+For genrality we can denote by $\xi$ the vector that encapsulates all time-varying parameters
+of~\eqref{eq:mpc_general_formal}, i.e. the current states $x(t)$,
+current and future disturbances $d(t), \ldots, d(t+N T_s)$, or possibly other parameters such as comfort boundaries or reference signals which depend on specific formulation.
 
 \section{MPC FORMULATION IN BUILDINGS: GRANTING A PHYSICAL MEANING }
 
