@@ -5,7 +5,7 @@
 \documentclass[10pt]{extarticle}
 % Miktex users: require l3 packages
 %             : optional 3 packages
-\usepackage{amssymb,amsmath,multicol,titlesec,apacite,booktabs,tabto,url}
+\usepackage{amssymb,amsmath,multicol,titlesec,apacite,booktabs,tabto,url, multirow}
 %\usepackage[round]{natbib}  
 
 \usepackage[hmargin = 1in, vmargin = 1in]{geometry}
@@ -126,17 +126,42 @@ current and future disturbances $d(t), \ldots, d(t+N T_s)$, or possibly other pa
 
 \section{MPC FORMULATION IN BUILDINGS: GRANTING A PHYSICAL MEANING }
 
-The titles of the main sections have to be centered, numbered and in \textbf{12-point bold type} CAPITAL LETTERS.  With the exception of the abstract, nomenclature, references, and acknowledgments section headings have to be numbered. Blank lines need to be placed above and below each main section title.
+Now that the MPC abstract formulation has been defined, 
+physical meaning and ranges of variables have to be specified.
 
 \begin{table}[b]
 % Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 \centering
-\caption{Page margins for manuscripts}
-\begin{tabular}{ccccc}
+\caption{MPC formulation translation}
+\begin{tabular}{l|l|cccc}
 \toprule
-\textbf{Page Size} & \textbf{Top} & \textbf{Bottom} & \textbf{Left} & \textbf{Right} \\ 
-\midrule 
-U.S. Standard Letter & 1 inch (2.54 cm) & 1 inch (2.54 cm) & 1 inch (2.54 cm) & 1 inch (2.54 cm) \\ 
+\multicolumn{2}{r}{}  & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
+\toprule
+\multicolumn{2}{l}{\textbf{Physical domain}} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
+\midrule
+\multirow{5}{*}{\textbf{Temperatures}} & \textbf{Envelope temperatures (wall, concrete, glazing...)} & $\bullet$ & - & - & - \\ 
+& \textbf{Zone operative temperatures} & - & $\bullet$ & - & - \\
+& \textbf{Air/water supply temperatures} & - & - & $\bullet$ & - \\
+& \textbf{Ambient temperature} & - & - & - & $\bullet$ \\
+& \textbf{Borefield deep temperatures} & $\bullet$ & - & - & - \\
+\midrule
+\multirow{4}{*}{\textbf{Heat sources}} &
+\textbf{HVAC components} & - & - & $\bullet$ & - \\
+& \textbf{Solar radiation} & - & - & - & $\bullet$ \\
+& \textbf{Occupants} & - & - & - & $\bullet$ \\
+& \textbf{Lighting} & - & - & $\bullet$ & $\bullet$ \\
+\midrule
+\multirow{4}{*}{\textbf{Component signals}} &
+\textbf{Supply system set-points} & - & - & $\bullet$ & - \\
+& \textbf{Pump/fan speeds/dif. pressure} & - & - & $\bullet$ & - \\
+& \textbf{Valve positions} & - & - & $\bullet$ & - \\
+& \textbf{Damper positions} & - & - & $\bullet$ & - \\
+\midrule
+\multirow{4}{*}{\textbf{IEQ}} &
+ \textbf{Air mass flow} & - & - & $\bullet$ & - \\
+& \textbf{PMV} & - & $\bullet$ & - & - \\
+& \textbf{Humidity} & - & $\bullet$ & - & $\bullet$ \\
+& \textbf{Illuminance} & - & $\bullet$ & - & - \\
 \bottomrule 
 \end{tabular}
 \end{table} 
