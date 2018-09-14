@@ -196,35 +196,36 @@ e.g., slew rate constraints on input variables.
 % Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 \centering
 \caption{MPC formulation translation}
-\begin{tabular}{l|l|cccc}
+\begin{tabular}{l|c|l|cccc}
 \toprule
-\multicolumn{2}{r}{}  & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
+\multicolumn{3}{r}{}  & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
 \toprule
-\multicolumn{2}{l}{\textbf{Physical domain}} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
+\textbf{Physical domain} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
 \midrule
-\multirow{5}{*}{\textbf{Temperatures}} & \textbf{Envelope temperatures (wall, concrete, glazing...)} & $\bullet$ & - & - & - \\ 
-& \textbf{Zone operative temperatures} & - & $\bullet$ & - & - \\
-& \textbf{Air/water supply temperatures} & - & - & $\bullet$ & - \\
-& \textbf{Ambient temperature} & - & - & - & $\bullet$ \\
-& \textbf{Borefield deep temperatures} & $\bullet$ & - & - & - \\
+\multirow{5}{*}{\textbf{Temperatures}} & - & \textbf{Envelope temperatures (wall, concrete, glazing...)} & $\bullet$ & - & - & - \\ 
+& $T_z$ & \textbf{Zone operative temperatures} & - & $\bullet$ & - & - \\
+& $T_{sup}$ & \textbf{Air/water supply temperatures} &  - & - & $\bullet$ & - \\
+& $T_e$ & \textbf{Ambient temperature} &  - & - & - & $\bullet$ \\
+& - & \textbf{Borefield deep temperatures} & $\bullet$ & - & - & - \\
 \midrule
-\multirow{4}{*}{\textbf{Heat sources}} &
-\textbf{HVAC components} & - & - & $\bullet$ & - \\
-& \textbf{Solar radiation} & - & - & - & $\bullet$ \\
-& \textbf{Occupants} & - & - & - & $\bullet$ \\
-& \textbf{Lighting} & - & - & $\bullet$ & $\bullet$ \\
+\multirow{4}{*}{\textbf{Heat flows}} &
+$Q_{HVAC}$ & \textbf{HVAC components} & - & - & $\bullet$ & - \\
+& $Q_{rad}$ & \textbf{Solar radiation} & - & - & - & $\bullet$ \\
+& $Q_{occ}$ & \textbf{Occupancy internal gains} & - & - & - & $\bullet$ \\
+& $Q_{lig}$ & \textbf{Lighting internal gains} & - & - & $\bullet$ & $\bullet$ \\
 \midrule
-\multirow{4}{*}{\textbf{Component signals}} &
-\textbf{Supply system set-points} & - & - & $\bullet$ & - \\
-& \textbf{Pump/fan speeds/dif. pressure} & - & - & $\bullet$ & - \\
-& \textbf{Valve positions} & - & - & $\bullet$ & - \\
-& \textbf{Damper positions} & - & - & $\bullet$ & - \\
+\multirow{5}{*}{\textbf{Component signals}} &
+$T_{set}$ & \textbf{Supply system set-points} & - & - & $\bullet$ & - \\
+& $x_{pump}$ & \textbf{Pump/fan speed signal} & - & - & $\bullet$ & - \\
+& $\Delta p$ & \textbf{Pump/fan dif. pressure} & - & - & $\bullet$ & - \\
+& $x_{val}$ & \textbf{Valve positions} & - & - & $\bullet$ & - \\
+& $x_{dam}$ & \textbf{Damper positions} & - & - & $\bullet$ & - \\
 \midrule
 \multirow{4}{*}{\textbf{IEQ}} &
- \textbf{Air mass flow} & - & - & $\bullet$ & - \\
-& \textbf{PMV} & - & $\bullet$ & - & - \\
-& \textbf{Humidity} & - & $\bullet$ & - & $\bullet$ \\
-& \textbf{Illuminance} & - & $\bullet$ & - & - \\
+$\dot{m}_{air}$ & \textbf{Air mass flow} & - & - & $\bullet$ & - \\
+& $PMV$ & \textbf{PMV} & - & $\bullet$ & - & - \\
+& $\phi$ & \textbf{Humidity} & - & $\bullet$ & - & $\bullet$ \\
+& $I_v$ & \textbf{Illuminance} & - & $\bullet$ & - & - \\
 \bottomrule 
 \end{tabular}
 \end{table} 
