@@ -73,20 +73,20 @@ To this end, we choose the control engineering notation as our starting point,
 since it considers the formulation in a general way from an abstract point of view.
 From here, we aim to move to a more physical formulation based on the particularities and specific characteristics of the building sector.
 
-\section*{NOMENCLATURE}
-
-\begin{samepage}
-	$x$\tabto{1.0in}Vector of states	\\
-	$u$\tabto{1.0in}Vector of inputs	\\
-	$y$\tabto{1.0in}Vector of outputs\\	
-	$d$\tabto{1.0in}Vector of disturbances\ \\
-	$N$\tabto{1.0in}Prediction horizon
-	
-\end{samepage}
-\begin{samepage}
-	\textbf{Subscript}\\
-	$k$\tabto{1.0in}Considered time-step index
-\end{samepage}
+%\section*{NOMENCLATURE}
+%
+%\begin{samepage}
+%	$x$\tabto{1.0in}Vector of states	\\
+%	$u$\tabto{1.0in}Vector of inputs	\\
+%	$y$\tabto{1.0in}Vector of outputs\\	
+%	$d$\tabto{1.0in}Vector of disturbances\ \\
+%	$N$\tabto{1.0in}Prediction horizon
+%	
+%\end{samepage}
+%\begin{samepage}
+%	\textbf{Subscript}\\
+%	$k$\tabto{1.0in}Considered time-step index
+%\end{samepage}
 
 
 \section{CONTROL ENGINEERING NOTATION}
@@ -195,37 +195,37 @@ e.g., slew rate constraints on input variables.
 \begin{table}[b]
 % Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 \centering
-\caption{MPC formulation translation}
+\caption{MPC formulation notation translation}
 \begin{tabular}{l|c|l|cccc}
 \toprule
-\multicolumn{3}{r}{}  & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
+\multicolumn{3}{l}{\textbf{Physical domain}} & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
 \toprule
-\textbf{Physical domain} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
+\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
 \midrule
-\multirow{5}{*}{\textbf{Temperatures}} & - & \textbf{Envelope temperatures (wall, concrete, glazing...)} & $\bullet$ & - & - & - \\ 
-& $T_z$ & \textbf{Zone operative temperatures} & - & $\bullet$ & - & - \\
-& $T_{sup}$ & \textbf{Air/water supply temperatures} &  - & - & $\bullet$ & - \\
-& $T_e$ & \textbf{Ambient temperature} &  - & - & - & $\bullet$ \\
-& - & \textbf{Borefield deep temperatures} & $\bullet$ & - & - & - \\
+\multirow{5}{*}{\textbf{Temperatures}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & - & - & - \\ 
+& $T_z$ & Zone operative temperatures & - & $\bullet$ & - & - \\
+& $T_{sup}$ & Air/water supply temperatures &  - & - & $\bullet$ & - \\
+& $T_e$ & Ambient temperature &  - & - & - & $\bullet$ \\
+& $T_b$ & Borefield deep temperatures & $\bullet$ & - & - & - \\
 \midrule
 \multirow{4}{*}{\textbf{Heat flows}} &
-$Q_{HVAC}$ & \textbf{HVAC components} & - & - & $\bullet$ & - \\
-& $Q_{rad}$ & \textbf{Solar radiation} & - & - & - & $\bullet$ \\
-& $Q_{occ}$ & \textbf{Occupancy internal gains} & - & - & - & $\bullet$ \\
-& $Q_{lig}$ & \textbf{Lighting internal gains} & - & - & $\bullet$ & $\bullet$ \\
+$Q_{HVAC}$ & HVAC components & - & - & $\bullet$ & - \\
+& $Q_{rad}$ & Solar radiation & - & - & - & $\bullet$ \\
+& $Q_{occ}$ & Occupancy internal gains & - & - & - & $\bullet$ \\
+& $Q_{lig}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$ \\
 \midrule
 \multirow{5}{*}{\textbf{Component signals}} &
-$T_{set}$ & \textbf{Supply system set-points} & - & - & $\bullet$ & - \\
-& $x_{pump}$ & \textbf{Pump/fan speed signal} & - & - & $\bullet$ & - \\
-& $\Delta p$ & \textbf{Pump/fan dif. pressure} & - & - & $\bullet$ & - \\
-& $x_{val}$ & \textbf{Valve positions} & - & - & $\bullet$ & - \\
-& $x_{dam}$ & \textbf{Damper positions} & - & - & $\bullet$ & - \\
+$T_{set}$ & Supply system set-points & - & - & $\bullet$ & - \\
+& $x_{pump}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
+& $\Delta p$ & Pump/fan dif. pressure & - & - & $\bullet$ & - \\
+& $x_{val}$ & Valve positions & - & - & $\bullet$ & - \\
+& $x_{dam}$ & Damper positions & - & - & $\bullet$ & - \\
 \midrule
 \multirow{4}{*}{\textbf{IEQ}} &
-$\dot{m}_{air}$ & \textbf{Air mass flow} & - & - & $\bullet$ & - \\
-& $PMV$ & \textbf{PMV} & - & $\bullet$ & - & - \\
-& $\phi$ & \textbf{Humidity} & - & $\bullet$ & - & $\bullet$ \\
-& $I_v$ & \textbf{Illuminance} & - & $\bullet$ & - & - \\
+$\dot{m}_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
+& $PMV$ & PMV & - & $\bullet$ & - & - \\
+& $\phi$ & Humidity & - & $\bullet$ & - & $\bullet$ \\
+& $I_v$ & Illuminance & - & $\bullet$ & - & - \\
 \bottomrule 
 \end{tabular}
 \end{table} 
