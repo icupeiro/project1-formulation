@@ -128,23 +128,106 @@ current and future disturbances $d(t), \ldots, d(t+N T_s)$, or possibly other pa
 
 Now that the MPC abstract formulation has been defined, 
 physical meaning and ranges of variables have to be specified.
+Table~\ref{tab:mpc_form:translation} summarizes the most common
+metrics found in building control and maps them with the abstract
+notation from the control engineering notation. 
+
+
+\begin{table}[h]
+	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
+	\centering
+	\caption{MPC formulation notation translation}
+	\label{tab:mpc_form:translation}
+	\begin{tabular}{l|c|l|cccc}
+		\toprule
+		\multicolumn{3}{l}{\textbf{Physical domain}} & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
+		\toprule
+		\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
+		\midrule
+		\multirow{5}{*}{\textbf{Temperatures}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & - & - & - \\ 
+		& $T_z$ & Zone operative temperatures & - & $\bullet$ & - & - \\
+		& $T_{sup}$ & Air/water supply temperatures &  - & - & $\bullet$ & - \\
+		& $T_e$ & Ambient temperature &  - & - & - & $\bullet$ \\
+		& $T_b$ & Borefield deep temperatures & $\bullet$ & - & - & - \\
+		\midrule
+		\multirow{5}{*}{\textbf{Heat flows}} &
+		$Q_{HVAC}$ & Total heat flow of HVAC components & - & - & $\bullet$ & - \\
+		& $Q_{i}$ & Heat flow of the HVAC component $i$ & - & - & - & $\bullet$ \\
+		& $Q_{rad}$ & Solar radiation & - & - & - & $\bullet$ \\
+		& $Q_{occ}$ & Occupancy internal gains & - & - & - & $\bullet$ \\
+		& $Q_{lig}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$ \\
+		\midrule
+		\multirow{5}{*}{\textbf{Component signals}} &
+		$T_{set}$ & Supply system set-points & - & - & $\bullet$ & - \\
+		& $x_{pump}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
+		& $\Delta p$ & Pump/fan dif. pressure & - & - & $\bullet$ & - \\
+		& $x_{val}$ & Valve positions & - & - & $\bullet$ & - \\
+		& $x_{dam}$ & Damper positions & - & - & $\bullet$ & - \\
+		\midrule
+		\multirow{4}{*}{\textbf{IEQ}} &
+		$\dot{m}_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
+		& $PMV$ & PMV & - & $\bullet$ & - & - \\
+		& $\phi$ & Humidity & - & $\bullet$ & - & $\bullet$ \\
+		& $I_v$ & Illuminance & - & $\bullet$ & - & - \\
+		\bottomrule 
+	\end{tabular}
+\end{table} 
+
 The main objective of building control is the maximization of 
 the occupant comfort while using as less resources as possible. 
 This definition leads to a multi-objective optimization problem,
-with two conflicting terms that have to be properly balanced. 
-This balance is typically adjusted by means of weighting terms,
-to give priority to the different targets.  
-Eq.~\eqref{eq:mpc_general_formal:cost}
-can be re-written as a multi-objective function~\eqref{eq:mpc_building_formal:cost},
-where $||{Q_{\text{x}} h(x_{k})}||_2^2$ represents an arbitrary
-discomfort term in the form of the weighted suqared 2-norm of
-the function of the states, and ${Q_{\text{u}} u_{k}}$ stands
-for the weighted linear energy term. The matrices $Q_{\text{x}}$
-and $Q_{\text{u}}$ here represent the weighting factors, and
-$P_k$ is the time varying factor representing e.g. the price
-or emission profiles associated with the energy use.
+with two conflicting terms: an energy-related term and a comfort
+related term. The balance between these terms is typically adjusted
+by means of weighting terms to give priority to the different targets.
 In human perspective, these weighting factors represent the "price"
 that the user is willing to pay to have more or less comfort.
+Eq.~\eqref{eq:mpc_general_formal:cost}
+can be re-written as a multi-objective function~\eqref{eq:mpc_building_formal:cost},
+where $\ell_c$ represents an arbitrary weighted discomfort term and $\ell_e$
+stands for the weighted energetic term. 
+
+Table~\ref{tab:mpc_form:objectives} recaps the most common objectives used 
+in the MPC formulation. The energetic term accounts for the energy used in all
+the HVAC components of the building. For $n$ HVAC components in the building, 
+the energy used in the building stands for the sum of the energy of each
+HVAC component $i$, which can be calculated as a function $\alpha_i$ of the states,
+inputs and disturbances found in our model. Generally, the energy used by
+any HVAC component $i$ can be calculated as the ratio between the heat that
+delivers $Q_i$ and its efficiency $\eta_i$. 
+
+In function of which objective it is desired to minimised, these $\alpha_i$
+functions can be transformed using a pricing factor $P_i$, which can be added
+as a forecasted disturbance to the formulation. Energy can be converted to
+different metrics depending on their nature. Monetary cost is determined 
+by using a cost factor $p_i$ that can be variable (electricity price),
+constant (fuel price), negative (PV injection to the grid)... $CO_2$ footprint
+is calculated with an emission factor $e_i$ and the share of renewable energy
+sources (RES) can be computed with the share percentage of each component $r_i$.
+ 
+Both terms are weighted with the matrices $Q_e$ and $Q_c$
+in order to adjust the trade-off between terms.
+
+\renewcommand{\arraystretch}{1.5}
+\begin{table}[h]
+	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
+	\centering
+	\caption{MPC formulation objectives}
+	\label{tab:mpc_form:objectives}
+	\begin{tabular}{l|c|c}
+		\toprule
+		\multicolumn{3}{l}{\textbf{Energy-related objective term $\ell_e = Q_e \sum_{i=1}^{n} P_i \alpha_i(x_k, y_k, d_k)$}} \\
+		\midrule
+		\textbf{Linguistic objective} & \textbf{Pricing Factor} & \textbf{MPC formulation} \\
+		\midrule
+		General form & $P_i$ &  $\alpha_i(x_k, u_k, d_k)$ \\
+		\midrule
+		Minimise energy use & $P_i = 1$ & \multirow{4}{*}{ $\dfrac{Q_{i}}{\eta_i}$} \\
+		Minimise cost & $P_i = p_i(t)$ &  \\
+		Minimise $CO_2$ emissions & $P_i = e_i(t)$ & \\
+		Maximise RES & $P_i = 1 - r_i(t)$ &   \\
+		\bottomrule 
+	\end{tabular}
+\end{table}
 
 In general, there are two types of constraints,
 inequality  (control inputs range, comfort zones, etc.) and equality 
@@ -176,8 +259,7 @@ e.g., slew rate constraints on input variables.
 	\label{eq:mpc_building_formal}
 	\begin{align}
 	\min_{u_0, \ldots, u_{N-1}}  
-	&\sum_{k=0}^{N-1} (||{Q_{\text{x}} h(x_{k}})||_2^2
-	+ {Q_{\text{u}} P_k u_{k}}) &
+	&\sum_{k=0}^{N-1} \ell_c(x_k,u_k,d_k) + \ell_e(x_k,u_k,d_k) &
 	\label{eq:mpc_building_formal:cost}\\
 	\text{s.t.} \ & x_{k+1} = f(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:xp} \\
 	& y_{k} = g(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:yp} \\
@@ -192,43 +274,6 @@ e.g., slew rate constraints on input variables.
 \end{subequations}
 
 
-\begin{table}[b]
-% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
-\centering
-\caption{MPC formulation notation translation}
-\begin{tabular}{l|c|l|cccc}
-\toprule
-\multicolumn{3}{l}{\textbf{Physical domain}} & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
-\toprule
-\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
-\midrule
-\multirow{5}{*}{\textbf{Temperatures}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & - & - & - \\ 
-& $T_z$ & Zone operative temperatures & - & $\bullet$ & - & - \\
-& $T_{sup}$ & Air/water supply temperatures &  - & - & $\bullet$ & - \\
-& $T_e$ & Ambient temperature &  - & - & - & $\bullet$ \\
-& $T_b$ & Borefield deep temperatures & $\bullet$ & - & - & - \\
-\midrule
-\multirow{4}{*}{\textbf{Heat flows}} &
-$Q_{HVAC}$ & HVAC components & - & - & $\bullet$ & - \\
-& $Q_{rad}$ & Solar radiation & - & - & - & $\bullet$ \\
-& $Q_{occ}$ & Occupancy internal gains & - & - & - & $\bullet$ \\
-& $Q_{lig}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$ \\
-\midrule
-\multirow{5}{*}{\textbf{Component signals}} &
-$T_{set}$ & Supply system set-points & - & - & $\bullet$ & - \\
-& $x_{pump}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
-& $\Delta p$ & Pump/fan dif. pressure & - & - & $\bullet$ & - \\
-& $x_{val}$ & Valve positions & - & - & $\bullet$ & - \\
-& $x_{dam}$ & Damper positions & - & - & $\bullet$ & - \\
-\midrule
-\multirow{4}{*}{\textbf{IEQ}} &
-$\dot{m}_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
-& $PMV$ & PMV & - & $\bullet$ & - & - \\
-& $\phi$ & Humidity & - & $\bullet$ & - & $\bullet$ \\
-& $I_v$ & Illuminance & - & $\bullet$ & - & - \\
-\bottomrule 
-\end{tabular}
-\end{table} 
 
 
 
