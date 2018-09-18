@@ -5,7 +5,7 @@
 \documentclass[10pt]{extarticle}
 % Miktex users: require l3 packages
 %             : optional 3 packages
-\usepackage{amssymb,amsmath,multicol,titlesec,apacite,booktabs,tabto,url, multirow}
+\usepackage{amssymb,amsmath,multicol,titlesec,apacite,booktabs,tabto,url, multirow, makecell}
 %\usepackage[round]{natbib}  
 
 \usepackage[hmargin = 1in, vmargin = 1in]{geometry}
@@ -157,6 +157,10 @@ notation from the control engineering notation.
 		& $Q_{occ}$ & Occupancy internal gains & - & - & - & $\bullet$ \\
 		& $Q_{lig}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$ \\
 		\midrule
+		\multirow{2}{*}{\textbf{Mass flows}} &
+		$m_{wat}$ & Water mass flow & - & - & $\bullet$ & - \\
+		& $m_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
+		\midrule
 		\multirow{5}{*}{\textbf{Component signals}} &
 		$T_{set}$ & Supply system set-points & - & - & $\bullet$ & - \\
 		& $x_{pump}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
@@ -164,9 +168,9 @@ notation from the control engineering notation.
 		& $x_{val}$ & Valve positions & - & - & $\bullet$ & - \\
 		& $x_{dam}$ & Damper positions & - & - & $\bullet$ & - \\
 		\midrule
-		\multirow{4}{*}{\textbf{IEQ}} &
-		$\dot{m}_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
-		& $PMV$ & PMV & - & $\bullet$ & - & - \\
+		\multirow{4}{*}{\textbf{\shortstack[l]{Indoor Environmental \\ Quality (IEQ)}}} &
+		 $PMV$ & Predicted mean vote & - & $\bullet$ & - & - \\
+		& $CO_2$ & $CO_2$ concentration in air & - & $\bullet$ & - & $\bullet$ \\
 		& $\phi$ & Humidity & - & $\bullet$ & - & $\bullet$ \\
 		& $I_v$ & Illuminance & - & $\bullet$ & - & - \\
 		\bottomrule 
@@ -207,24 +211,65 @@ sources (RES) can be computed with the share percentage of each component $r_i$.
 Both terms are weighted with the matrices $Q_e$ and $Q_c$
 in order to adjust the trade-off between terms.
 
-\renewcommand{\arraystretch}{1.5}
+\renewcommand{\arraystretch}{2.5}
 \begin{table}[h]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
 	\caption{MPC formulation objectives}
 	\label{tab:mpc_form:objectives}
-	\begin{tabular}{l|c|c}
+	\begin{tabular}{l|c}
 		\toprule
-		\multicolumn{3}{l}{\textbf{Energy-related objective term $\ell_e = Q_e \sum_{i=1}^{n} P_i \alpha_i(x_k, y_k, d_k)$}} \\
+		\textbf{Linguistic objective}  & \textbf{MPC formulation} \\
 		\midrule
-		\textbf{Linguistic objective} & \textbf{Pricing Factor} & \textbf{MPC formulation} \\
+		Minimise energy use &   $ \min_{u_0, \ldots, u_{N-1}} \sum_{k=0}^{N-1} \sum_{i=1}^{n} \dfrac{Q_{i}}{\eta_i}$ \\
+		Minimise cost & $ \min_{u_0, \ldots, u_{N-1}} \sum_{k=0}^{N-1} \sum_{i=1}^{n} p_i \dfrac{Q_{i}}{\eta_i}$  \\
+		Minimise $CO_2$ emissions & $ \min_{u_0, \ldots, u_{N-1}} \sum_{k=0}^{N-1} \sum_{i=1}^{n}  e_i \dfrac{Q_{i}}{\eta_i}$  \\
+		Maximise RES &  $ \min_{u_0, \ldots, u_{N-1}} \sum_{k=0}^{N-1} \sum_{i=1}^{n} (1-r_i) \dfrac{Q_{i}}{\eta_i}$  \\
+		Comfort &  $ \min_{u_0, \ldots, u_{N-1}} \sum_{k=0}^{N-1} \sum_{j=1}^{n_y} s_k$  \\
+		\bottomrule 
+	\end{tabular}
+\end{table}
+
+\renewcommand{\arraystretch}{2}
+\begin{table}[h]
+	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
+	\centering
+	\caption{MPC formulation parameters}
+	\label{tab:mpc_form:parameters}
+	\begin{tabular}{l|c|l}
+		\toprule
+		\multicolumn{3}{l}{\textbf{Pricing factors}} \\
 		\midrule
-		General form & $P_i$ &  $\alpha_i(x_k, u_k, d_k)$ \\
+		\textbf{Parameter}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		Minimise energy use & $P_i = 1$ & \multirow{4}{*}{ $\dfrac{Q_{i}}{\eta_i}$} \\
-		Minimise cost & $P_i = p_i(t)$ &  \\
-		Minimise $CO_2$ emissions & $P_i = e_i(t)$ & \\
-		Maximise RES & $P_i = 1 - r_i(t)$ &   \\
+		Cost factor & $p_i$ &  \makecell[l]{It can be variable on electric-based components, constant for fuel-based \\ components or even negative in renewable-based components if energy \\ can be poured in the grid} \\
+		Emission factor & $e_i$ & \makecell[l]{It can be variable on electric-based components, constant for fuel-based \\ components and zero on renewable-based components}  \\
+		RES share factor & $r_i$ & \makecell[l]{For electric-based components, depends on the share of the grid at the \\ moment. For fuel-based ones the share is zero and for renewable-based \\ components the share is unitary} \\
+		\midrule
+		\multicolumn{3}{l}{\textbf{Efficiencies}} \\
+		\midrule
+							\textbf{Parameter}  & \textbf{Symbol} &  \textbf{Description} \\
+		\midrule
+		\makecell[l]{Coefficient of \\ performance} & $COP$ &  \makecell[l]{Heating efficiency of heat pumps and air conditioning systems} \\
+		\makecell[l]{Energy efficiency \\ ratio} & $EER$ & \makecell[l]{Cooling efficiency of heat pumps and air conditioning systems}  \\
+		Efficiency & $\eta$ & \makecell[l]{Efficiency of all other systems} \\
+		\midrule
+		\multicolumn{3}{l}{\textbf{Weighting terms}} \\
+		\midrule
+		\textbf{Parameter}  & \textbf{Symbol} &  \textbf{Description} \\
+		\midrule
+		\makecell[l]{Energy weighting \\ term} & $Q_e$ &  \makecell[l]{Weighting term for the energy term in the objective function} \\
+		\makecell[l]{Comfort weighting \\ term} & $Q_c$ & \makecell[l]{Weighting term for the comfort term in the objective function}  \\
+		\midrule
+		\multicolumn{3}{l}{\textbf{Comfort bounds}} \\
+		\midrule
+		\textbf{Parameter}  & \textbf{Symbol} &  \textbf{Description} \\
+		\midrule
+		Temperature bounds & $\underline{T},\overline{T}$ & Chosen operative temperature comfort bounds for hard constraints \\
+		$CO_2$ bounds & $\underline{CO_2},\overline{CO_2}$ & Chosen $CO_2$ concentration comfort bounds for hard constraints \\
+		PMV bounds & $\underline{PMV},\overline{PMV}$ &  Chosen PMV comfort bounds for hard constraints \\
+		Humidity bounds & $\underline{\phi},\overline{\phi}$ &  Chosen humidity comfort bounds for hard constraints \\
+		Illuminance & $\underline{I_v},\overline{I_v}$ & Chosen illuminance comfort bounds for hard constraints  \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
