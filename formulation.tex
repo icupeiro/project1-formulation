@@ -67,11 +67,11 @@ iago.cupeirofigueroa@kuleuven.be\textsuperscript{1}, jan.drgona@kuleuven.be\text
 \section*{ABSTRACT}
 
 This document contains the MPC formulation template within the frame of the IBPSA Project 1.
-The proposed template has to adapt all possible formulations for the different types of model and key performance indicators (KPIs) in consideration.
+The proposed template aims to adapt all possible formulations for the different types of models and key performance indicators (KPIs) in consideration.
 It has to be general.
 To this end, we choose the control engineering notation as our starting point,
 since it considers the formulation in a general way from an abstract point of view.
-From here, we aim to move to a more physical formulation based on the particularities and specific characteristics of the building sector.
+From here, we  move to a formulation with physical meanind based on the specific characteristics of the building sector.
 
 %\section*{NOMENCLATURE}
 %
@@ -129,12 +129,9 @@ current and future disturbances $d(t), \ldots, d(t+N T_s)$, or possibly other pa
 Now that the MPC abstract formulation has been defined, 
 physical meaning and ranges of variables have to be specified.
 Table~\ref{tab:mpc_form:translation} summarizes the most common
-metrics found in building control and maps them with the abstract
+variables found in building control and maps them with the abstract
 notation from the control engineering notation. 
-
-Apart from the variables, parameters can be found in the formulation. 
-An overview of the most common parameters in building control can be seen in Table
-\ref{tab:mpc_form:parameters}.
+An overview of the most common parameters in building control is given in Table~\ref{tab:mpc_form:parameters}.
 
 Table~\ref{tab:mpc_form:objectives} recaps the most common objectives used 
 in the MPC formulation. These objectives can be combined in a multi-objective
@@ -189,15 +186,16 @@ penalized in the objective function (see Comfort objective in Table
 \ref{tab:mpc_form:objectives}), trying to keep within the established
 comfort bounds. The constrainst can be time-varying.
 
-
+% TODO: Q_i is conflicting notation with weights, keep using Q_{HVAC}^i
+% TODO: we could add units
 \begin{table}[h]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
-	\caption{MPC formulation notation translation}
+	\caption{MPC variables notation and translation between physical and abstract domain.}
 	\label{tab:mpc_form:translation}
 	\begin{tabular}{l|c|l|cccc}
 		\toprule
-		\multicolumn{3}{l}{\textbf{Physical domain}} & \multicolumn{4}{r}{\textbf{Abstract domain}} \\
+		\multicolumn{3}{l}{\textbf{Physical domain}} &  \multicolumn{4}{r}{\textbf{Abstract domain}} \\
 		\toprule
 		\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
 		\midrule
@@ -270,13 +268,13 @@ comfort bounds. The constrainst can be time-varying.
 		\midrule
 		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		\makecell[l]{Arbitrary weighting \\ term} & $Q_x$ &  Weighting term for the $x$ term in the objective function \\
-		\makecell[l]{Slack variable} & $s_x$ &  Auxiliary soft constraint for the comfort requirement $x$ \\
+		\makecell[l]{Arbitrary weighting \\ term} & $Q_{\ell}$ &  Weighting term for the $\ell$ term in the objective function \\
+		\makecell[l]{Slack variable} & $s$ &  Used to soften the constraints, usually for the given comfort requirement \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
 
-
+% TODO: add definition and use of mathematical norms, 1,2,inf
 \renewcommand{\arraystretch}{2.5}
 \begin{table}[h]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
@@ -292,7 +290,7 @@ comfort bounds. The constrainst can be time-varying.
 		Minimise $CO_2$ emissions & $ \sum_{i=1}^{n}  e_i \dfrac{Q_{i}}{\eta_i}$  \\
 		Maximise RES &  $ \sum_{i=1}^{n} (1-r_i) \dfrac{Q_{i}}{\eta_i}$  \\
 		Flexibility & ???  \\
-		Maximise comfort &  $ \sum_{j=1}^{n_y} s_k$ \\
+		Minimize discomfort &  $ \sum_{j=1}^{n_y} ||s_j||^2$ \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
@@ -309,7 +307,7 @@ comfort bounds. The constrainst can be time-varying.
 		\midrule
 		Component limitations & $ \underline{Q_i}  <= Q_i <= \overline{Q_i} $ \\ 
 		Component rate of change & $ \underline{\Delta Q_i}  <= \Delta Q_i <= \overline{\Delta Q_i} $ \\ 
-		Temperature &   $ \underline{T_k} - s_{T_k} <= T_z <= \overline{T_k} + s_{T_k} $ \\
+		Temperature comfort bounds &   $ \underline{T_k} - s_{T_k} <= T_z <= \overline{T_k} + s_{T_k} $ \\
 		$CO_2$ concentration & $ \underline{{CO_2}_k} - s_{{CO_2}_k} <= CO_2 <= \overline{{CO_2}_k} + s_{{CO_2}_k} $  \\
 		Predicted mean vote & $ \underline{PMV_k} - s_{PMV_k} <= PMV <= \overline{PMV_k} + s_{PMV_k} $  \\
 		Humidity &  $ \underline{\phi_k} - s_{\phi_k} <= \phi <= \overline{\phi_k} + s_{\phi_k} $  \\
