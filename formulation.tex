@@ -212,6 +212,11 @@ comfort bounds. The constrainst can be time-varying.
 		& $Q_{occ}$ & Occupancy internal gains & - & - & - & $\bullet$ \\
 		& $Q_{lig}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$ \\
 		\midrule
+		\multirow{3}{*}{\textbf{Power used}} &
+		$P_{HVAC}$ & Total power of HVAC components & - & - & $\bullet$ & - \\
+		& $P_{i}$ & Power of the HVAC component $i$ & - & - &  $\bullet$ &- \\
+		& $P_{lig}$ & Lighting power & - & - & $\bullet$ & $\bullet$ \\
+\midrule
 		\multirow{2}{*}{\textbf{Mass flows}} &
 		$m_{wat}$ & Water mass flow & - & - & $\bullet$ & - \\
 		& $m_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
@@ -227,7 +232,7 @@ comfort bounds. The constrainst can be time-varying.
 		$PMV$ & Predicted mean vote & - & $\bullet$ & - & - \\
 		& $CO_2$ & $CO_2$ concentration in air & - & $\bullet$ & - & $\bullet$ \\
 		& $\phi$ & Humidity & - & $\bullet$ & - & $\bullet$ \\
-		& $I_v$ & Illuminance & - & $\bullet$ & - & - \\
+		& $E_v$ & Illuminance & - & $\bullet$ & - & - \\
 		\bottomrule 
 	\end{tabular}
 \end{table} 
@@ -259,7 +264,7 @@ comfort bounds. The constrainst can be time-varying.
 		$CO_2$ concentration & $\underline{CO_2},\overline{CO_2}$ & $CO_2$ concentration comfort bounds \\
 		Predicted mean vote & $\underline{PMV},\overline{PMV}$ &  Predicted mean vote comfort bounds \\
 		Humidity & $\underline{\phi},\overline{\phi}$ &  Humidity comfort bounds  \\
-		Illuminance & $\underline{I_v},\overline{I_v}$ & Illuminance comfort bounds  \\
+		Illuminance & $\underline{E_v},\overline{E_v}$ & Illuminance comfort bounds  \\
 		\bottomrule 
 		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
@@ -285,10 +290,10 @@ comfort bounds. The constrainst can be time-varying.
 		\toprule
 		\textbf{Linguistic objective}  & \textbf{MPC formulation} \\
 		\midrule
-		Minimise energy use &   $ \sum_{i=1}^{n} \dfrac{Q_{i}}{\eta_i}$ \\
-		Minimise cost & $  \sum_{i=1}^{n} p_i \dfrac{Q_{i}}{\eta_i}$  \\
-		Minimise $CO_2$ emissions & $ \sum_{i=1}^{n}  e_i \dfrac{Q_{i}}{\eta_i}$  \\
-		Maximise RES &  $ \sum_{i=1}^{n} (1-r_i) \dfrac{Q_{i}}{\eta_i}$  \\
+		Minimise energy use &   $ \sum_{i=1}^{n} P_i = \sum_{i=1}^{n} \dfrac{Q_{i}}{\eta_i}$ \\
+		Minimise cost & $ \sum_{i=1}^{n} p_i P_i = \sum_{i=1}^{n} p_i \dfrac{Q_{i}}{\eta_i}$  \\
+		Minimise $CO_2$ emissions & $ \sum_{i=1}^{n} e_i P_i = \sum_{i=1}^{n}  e_i \dfrac{Q_{i}}{\eta_i}$  \\
+		Maximise RES &  $ \sum_{i=1}^{n} (1-r_i) P_i  = \sum_{i=1}^{n} (1-r_i) \dfrac{Q_{i}}{\eta_i}$  \\
 		Flexibility & ???  \\
 		Minimize discomfort &  $ \sum_{j=1}^{n_y} ||s_j||^2$ \\
 		\bottomrule 
@@ -311,7 +316,7 @@ comfort bounds. The constrainst can be time-varying.
 		$CO_2$ concentration & $ \underline{{CO_2}_k} - s_{{CO_2}_k} <= CO_2 <= \overline{{CO_2}_k} + s_{{CO_2}_k} $  \\
 		Predicted mean vote & $ \underline{PMV_k} - s_{PMV_k} <= PMV <= \overline{PMV_k} + s_{PMV_k} $  \\
 		Humidity &  $ \underline{\phi_k} - s_{\phi_k} <= \phi <= \overline{\phi_k} + s_{\phi_k} $  \\
-		Illuminance & $ \underline{{I_v}_k} - s_{{I_v}_k} <= I_v <= \overline{{I_v}_k} + s_{{I_v}_k} $  \\
+		Illuminance & $ \underline{{E_v}_k} - s_{{E_v}_k} <= E_v <= \overline{{E_v}_k} + s_{{E_v}_k} $  \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
