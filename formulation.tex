@@ -221,12 +221,13 @@ comfort bounds. The constrainst can be time-varying.
 		$m_{wat}$ & Water mass flow & - & - & $\bullet$ & - \\
 		& $m_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
 		\midrule
-		\multirow{5}{*}{\textbf{Component signals}} &
-		$T_{set}$ & Supply system set-points & - & - & $\bullet$ & - \\
-		& $x_{pump}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
-		& $\Delta p$ & Pump/fan dif. pressure & - & - & $\bullet$ & - \\
-		& $x_{val}$ & Valve positions & - & - & $\bullet$ & - \\
-		& $x_{dam}$ & Damper positions & - & - & $\bullet$ & - \\
+		\multirow{6}{*}{\textbf{\shortstack[l]{Component signals \\ (use set superscript)}}} &
+		$T^{set}_{i}$ & Supply system set-points & - & - & $\bullet$ & - \\
+		& $T^{set}_{z}$ & Zone set-point & - & - & $\bullet$ & - \\
+		& $x^{set}_{mov}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
+		& $\Delta p^{set}$ & Pump/fan dif. pressure & - & - & $\bullet$ & - \\
+		& $x^{set}_{val}$ & Valve positions & - & - & $\bullet$ & - \\
+		& $x^{set}_{dam}$ & Damper positions & - & - & $\bullet$ & - \\
 		\midrule
 		\multirow{4}{*}{\textbf{\shortstack[l]{Indoor Environmental \\ Quality (IEQ)}}} &
 		$PMV$ & Predicted mean vote & - & $\bullet$ & - & - \\
@@ -275,6 +276,7 @@ comfort bounds. The constrainst can be time-varying.
 		\midrule
 		\makecell[l]{Arbitrary weighting \\ term} & $Q_{\ell}$ &  Weighting term for the $\ell$ term in the objective function \\
 		\makecell[l]{Slack variable} & $s$ &  Used to soften the constraints, usually for the given comfort requirement \\
+		\makecell[l]{Time-step} & $t_s$ &  Time-step used in the optimization problem \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
