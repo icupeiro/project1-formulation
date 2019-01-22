@@ -199,11 +199,14 @@ comfort bounds. The constrainst can be time-varying.
 		\toprule
 		\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$} \\ 
 		\midrule
-		\multirow{5}{*}{\textbf{Temperatures}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & - & - & - \\ 
-		& $T_z$ & Zone operative temperatures & - & $\bullet$ & - & - \\
-		& $T_{sup}$ & Air/water supply temperatures &  - & - & $\bullet$ & - \\
+		\multirow{8}{*}{\textbf{Temperatures}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & - & - & - \\ 
+		& $T_{z,i}$ & Zone $i$ operative temperatures & - & $\bullet$ & - & - \\
+		& $T_{sup, i}$ & Air/water supply temperature of the component $i$ &  - & - & $\bullet$ & - \\
+		& $T_{ret, i}$ & Air/water return temperature of the component $i$ &  - & - & $\bullet$ & - \\
 		& $T_e$ & Ambient temperature &  - & - & - & $\bullet$ \\
-		& $T_b$ & Borefield deep temperatures & $\bullet$ & - & - & - \\
+		& $T_b$ & Borefield wall temperature & $\bullet$ & - & - & - \\
+		& $T_g$ & Borefield undisturbed ground temperature & $\bullet$ & - & - & - \\
+		& $T_{sg, i}$ & Borefield surrounding ground temperature at distance $i$ & $\bullet$ & - & - & - \\
 		\midrule
 		\multirow{5}{*}{\textbf{Heat flows}} &
 		$Q_{HVAC}$ & Total heat flow of HVAC components & - & - & $\bullet$ & - \\
@@ -222,18 +225,18 @@ comfort bounds. The constrainst can be time-varying.
 		& $m_{air}$ & Air mass flow & - & - & $\bullet$ & - \\
 		\midrule
 		\multirow{6}{*}{\textbf{\shortstack[l]{Component signals \\ (use set superscript)}}} &
-		$T^{set}_{i}$ & Supply system set-points & - & - & $\bullet$ & - \\
-		& $T^{set}_{z}$ & Zone set-point & - & - & $\bullet$ & - \\
-		& $x^{set}_{mov}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
-		& $\Delta p^{set}$ & Pump/fan dif. pressure & - & - & $\bullet$ & - \\
-		& $x^{set}_{val}$ & Valve positions & - & - & $\bullet$ & - \\
-		& $x^{set}_{dam}$ & Damper positions & - & - & $\bullet$ & - \\
+		$T^{set}_{i}$ & Supply system set-point of the component $i$ & - & - & $\bullet$ & - \\
+		& $T^{set}_{z,i}$ & Zone $i$ set-point & - & - & $\bullet$ & - \\
+		& $x^{set}_{mov, i}$ & Pump/fan $i$ speed signal & - & - & $\bullet$ & - \\
+		& $\Delta p^{set}_i$ & Pump/fan $i$ dif. pressure & - & - & $\bullet$ & - \\
+		& $x^{set}_{val, i}$ & Valve $i$ position & - & - & $\bullet$ & - \\
+		& $x^{set}_{dam, i}$ & Damper $i$ position & - & - & $\bullet$ & - \\
 		\midrule
 		\multirow{4}{*}{\textbf{\shortstack[l]{Indoor Environmental \\ Quality (IEQ)}}} &
-		$PMV$ & Predicted mean vote & - & $\bullet$ & - & - \\
-		& $CO_2$ & $CO_2$ concentration in air & - & $\bullet$ & - & $\bullet$ \\
-		& $\phi$ & Humidity & - & $\bullet$ & - & $\bullet$ \\
-		& $E_v$ & Illuminance & - & $\bullet$ & - & - \\
+		$PMV_i$ & Predicted mean vote in zone $i$ & - & $\bullet$ & - & - \\
+		& $CO_{2,i}$ & $CO_2$ concentration in air in zone $i$ & - & $\bullet$ & - & $\bullet$ \\
+		& $\phi_i$ & Humidity in zone $i$& - & $\bullet$ & - & $\bullet$ \\
+		& $E_{v,i}$ & Illuminance in zone $i$ & - & $\bullet$ & - & - \\
 		\bottomrule 
 	\end{tabular}
 \end{table} 
@@ -245,38 +248,38 @@ comfort bounds. The constrainst can be time-varying.
 	\centering
 	\caption{MPC formulation parameters}
 	\label{tab:mpc_form:parameters}
-	\begin{tabular}{l|c|l}
+	\begin{tabular}{l|c|l|c}
 		\toprule
-		\textbf{Efficiencies}  & \textbf{Symbol} &  \textbf{Description} \\
+		\textbf{Efficiencies}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-		\makecell[l]{Coefficient of \\ performance} & $COP$ &  \makecell[l]{Heating efficiency of heat pumps and air conditioning systems} \\
-		\makecell[l]{Energy efficiency \\ ratio} & $EER$ & \makecell[l]{Cooling efficiency of heat pumps and air conditioning systems}  \\
-		Efficiency & $\eta$ & \makecell[l]{Efficiency of all other systems} \\
+		\makecell[l]{Coefficient of \\ performance} & $COP_i$ &  \makecell[l]{Heating efficiency of heat pump \\ or air conditioning system $i$} & $T_{sup}, Q_{i}, P_{i}$ \\
+		\makecell[l]{Energy efficiency \\ ratio} & $EER_i$ & \makecell[l]{Cooling efficiency of heat pump \\ or air conditioning system $i$} & $T_{sup,i}, Q_{i}, P_{i}$ \\
+		Efficiency & $\eta$ & \makecell[l]{Efficiency of all other systems} & $T_{sup,i}, Q_{i}, P_{i}, ...$ \\
 		\midrule
 		\textbf{Pricing factor}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		Price factor & $p_i$ &  Conversion factor from energy to monetary cost of component $i$ \\
-		Emission factor & $e_i$ & Conversion factor from energy to $CO_2$ emissions of component $i$ \\
-		RES share factor & $r_i$ & Ratio of renewable energy of the considered component  of component $i$\\
+		Price factor & $p_i$ &  \makecell[l]{Conversion factor from energy \\ to monetary cost of component $i$} & $Q_i$ \\
+		Emission factor & $e_i$ & \makecell[l]{Conversion factor from energy \\ to $CO_2$ emissions of component $i$} & $Q_i$ \\
+		RES share factor & $r_i$ & \makecell[l]{Ratio of renewable energy of \\ the considered component $i$} & $Q_i$ \\
 		\midrule
 		\textbf{Comfort bounds}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		Temperature & $\underline{T},\overline{T}$ & Operative temperature comfort bounds \\
-		$CO_2$ concentration & $\underline{CO_2},\overline{CO_2}$ & $CO_2$ concentration comfort bounds \\
-		Predicted mean vote & $\underline{PMV},\overline{PMV}$ &  Predicted mean vote comfort bounds \\
-		Humidity & $\underline{\phi},\overline{\phi}$ &  Humidity comfort bounds  \\
-		Illuminance & $\underline{E_v},\overline{E_v}$ & Illuminance comfort bounds  \\
+		Temperature & $\underline{T},\overline{T}$ & \makecell[l]{Operative temperature comfort \\ bounds of zone $i$} & $T_{z,i}$ \\
+		$CO_2$ concentration & $\underline{CO_2},\overline{CO_2}$ & \makecell[l]{$CO_2$ concentration comfort \\ bounds of zone $i$} & $CO_{2,i}$ \\
+		Predicted mean vote & $\underline{PMV},\overline{PMV}$ &  \makecell[l]{Predicted mean vote comfort \\ bounds of zone $i$} & $PMV_i$ \\
+		Humidity & $\underline{\phi},\overline{\phi}$ &  Humidity comfort bounds & $\phi_i$  \\
+		Illuminance & $\underline{E_v},\overline{E_v}$ & Illuminance comfort bounds & $E_{v,i}$  \\
 		\bottomrule 
 		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		Power limit & $\underline{Q_i},\overline{Q_i}$ & Minimum/maximum power of the HVAC component $i$ \\
-		Power rate of change & $\underline{\Delta Q_i},\overline{\Delta Q_i}$ & Minimum/maximum power rate of change of the HVAC component $i$ \\
+		Power limit & $\underline{Q_i},\overline{Q_i}$ & \makecell[l]{Minimum/maximum power of \\ the HVAC component $i$} & $Q_i$ \\
+		Power rate of change & $\underline{\Delta Q_i},\overline{\Delta Q_i}$ & \makecell[l]{Minimum/maximum power rate of \\ change of the HVAC component $i$} & $Q_i$ \\
 		\midrule
 		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		\makecell[l]{Arbitrary weighting \\ term} & $Q_{\ell}$ &  Weighting term for the $\ell$ term in the objective function \\
-		\makecell[l]{Slack variable} & $s$ &  Used to soften the constraints, usually for the given comfort requirement \\
-		\makecell[l]{Time-step} & $t_s$ &  Time-step used in the optimization problem \\
+		\makecell[l]{Arbitrary weighting \\ term} & $Q_{\ell}$ &  \makecell[l]{Weighting term for the $\ell$ term in \\ the objective function} \\
+		\makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} \\
+		\makecell[l]{Time-step} & $t_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
