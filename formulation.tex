@@ -7,6 +7,7 @@
 %             : optional 3 packages
 \usepackage{amssymb,amsmath,multicol,titlesec,apacite,booktabs,tabto,url, multirow, makecell, eurosym}
 %\usepackage[round]{natbib}  
+\usepackage{longtable}
 
 \usepackage[hmargin = 1in, vmargin = 1in]{geometry}
 
@@ -42,6 +43,7 @@
 \renewcommand{\headrulewidth}{0pt} % Turn off the bar
 
 \newcommand\thefontsize[1]{{#1 The current font size is: \f@size pt\par}}
+
 
 \begin{document}
 	
@@ -135,7 +137,7 @@ because these variables are usually vectors, we will indicate  the
 $i$-th element of the vector variable via supercsript $i$.
 For instance the operative temperature in $i$-th zone will be denoted as $T_z^i$.
 
-An overview of the most common parameters in building control together with their associated varialbes  is given in Table~\ref{tab:mpc_form:parameters}.
+An overview of the most common modifying and bounding parameters in building control together with their associated varialbes  is given in Table~\ref{tab:mpc_form:parameters:modifiers} and Table~\ref{tab:mpc_form:parameters:bounds}, respectively.
 Please note that these parameters can be treated either as a constant numerial values or time-varying parameters. In the latter case the variables can be technically labeled as a reference signals $r$ within MPC formulation.
 
 Table~\ref{tab:mpc_form:objectives} recaps the most common objectives used 
@@ -242,22 +244,45 @@ comfort bounds. The constrainst can be time-varying.
 \begin{table}[h]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
-	\caption{MPC formulation parameters and reference signals.}
-	\label{tab:mpc_form:parameters}
+	\caption{MPC formulation parameters - modifiers.}
+	\label{tab:mpc_form:parameters:modifiers}
 	\begin{tabular}{l|c|l|c}
 		\toprule
 		\textbf{Energy efficiencies}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
 		\makecell[l]{Coefficient of \\ performance} & $COP^i$ &  \makecell[l]{Heating efficiency of heat pump \\ or air conditioning system $i$} & $T_{sup}, Q^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
 		\makecell[l]{Energy efficiency \\ ratio} & $EER^i$ & \makecell[l]{Cooling efficiency of heat pump \\ or air conditioning system $i$} & $T_{sup}, Q^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
-		Efficiency & $\eta$ & \makecell[l]{Efficiency of all other systems} & $T_{sup}, Q^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		Efficiency & $\eta^i$ & \makecell[l]{Efficiency of other  $i$-th system} & $T_{sup}, Q^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
 		\midrule
 		\textbf{Other energy factors}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
 		Price factor & $p^i$ &  \makecell[l]{Conversion factor from energy \\ to monetary cost of component $i$} & $Q^i_{\text{HVAC}}$ \\
 		Emission factor & $e^i$ & \makecell[l]{Conversion factor from energy \\ to $CO_2$ emissions of component $i$} & $Q^i_{\text{HVAC}}$ \\
 		RES factor & $r^i$ & \makecell[l]{Ratio of renewable energy of \\ the considered component $i$} & $Q^i_{\text{HVAC}}$ \\
+			\midrule
+		\textbf{Heat flow parameters}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
+		Specific heat capacity & $c_p^i$ & \makecell[l]{Specific heat capacity of \\ $i$-th medium} & $T_{sup}, T_{ret}, m_{\text{wat}}, m_{\text{air}}, Q^i_{\text{HVAC}}$ \\
+		\midrule
+		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} \\
+		\midrule
+		\makecell[l]{Arbitrary weighting \\ term} & $Q_{\text{xx}}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & $x,y,u,d,r$ \\
+		\makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
+		&  $T_{z}, CO_{2}, PMV, \phi, E_{\text{v}}$\\
+		\makecell[l]{Time-step} & $t_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} & $x,y,u,d,r$  \\
+		\bottomrule 
+	\end{tabular}
+\end{table}
+
+
+\renewcommand{\arraystretch}{2}
+\begin{table}[h]
+	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
+	\centering
+	\caption{MPC formulation parameters - bounds.}
+	\label{tab:mpc_form:parameters:bounds}
+	\begin{tabular}{l|c|l|c}
+		\toprule
 		\textbf{Comfort bounds}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
 		Temperature & $\underline{T_{\text{z}}},\overline{T_{\text{z}}}$ & \makecell[l]{Zone operative temperature  \\ comfort bounds } & $T_{\text{z}}$ \\
@@ -270,20 +295,18 @@ comfort bounds. The constrainst can be time-varying.
 		\midrule
 		Heat flow limit & $\underline{Q^i_{\text{HVAC}}},\overline{Q^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum heat flow of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
 		Change of heat flow rate & $\underline{\Delta Q^i_{\text{HVAC}}},\overline{\Delta Q^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum change of \\ heat flow rate of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		Change of diff. pressure & $\underline{\Delta\Delta p^i},\overline{\Delta\Delta p^i}$ & \makecell[l]{Minimum/maximum change of \\ diff. pressure of the  $i$-th fan/pump} & $\Delta p^i$ \\
-		Change of speed & $\underline{\Delta x^i_{\text{mov}}},\overline{\Delta x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum change of \\ speed of the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
+		Pump diff. pressure limit & $\underline{\Delta p^i},\overline{\Delta p^i}$ & \makecell[l]{Minimum/maximum diff. pressure \\  of the  $i$-th fan/pump} & $\Delta p^i$ \\
+		Change of pump diff. pressure & $\underline{\Delta\Delta p^i},\overline{\Delta\Delta p^i}$ & \makecell[l]{Minimum/maximum change of \\ diff. pressure of the  $i$-th fan/pump} & $\Delta p^i$ \\
+		Pump speed limit & $\underline{ x^i_{\text{mov}}},\overline{ x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum  speed of \\  the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
+		Change of pump speed & $\underline{\Delta x^i_{\text{mov}}},\overline{\Delta x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum change of \\ speed of the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
+		Valve position limits & $\underline{ x^i_{\text{val}}},\overline{ x^i_{\text{val}}}$ & \makecell[l]{Minimum/maximum position of \\  the  $i$-th valve} & $x^i_{\text{val}}$ \\
 		Change of valve position & $\underline{\Delta x^i_{\text{val}}},\overline{\Delta x^i_{\text{val}}}$ & \makecell[l]{Minimum/maximum change of \\ position of the  $i$-th valve} & $x^i_{\text{val}}$ \\
-		Change of damper position & $\underline{\Delta x^i_{\text{dam}}},\overline{\Delta x^i_{\text{dam}}}$ & \makecell[l]{Minimum/maximum change of \\ position of the  $i$-th valve} & $x^i_{\text{dam}}$ \\
-		\midrule
-		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} \\
-		\midrule
-		\makecell[l]{Arbitrary weighting \\ term} & $Q_{\text{xx}}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & $x,y,u,d,r$ \\
-		\makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
-		&  $T_{z}, CO_{2}, PMV, \phi, E_{\text{v}}$\\
-		\makecell[l]{Time-step} & $t_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} & $x,y,u,d,r$  \\
+		Damper position limits& $\underline{ x^i_{\text{dam}}},\overline{ x^i_{\text{dam}}}$ & \makecell[l]{Minimum/maximum position of \\  the  $i$-th damper} & $x^i_{\text{dam}}$ \\
+		Change of damper position & $\underline{\Delta x^i_{\text{dam}}},\overline{\Delta x^i_{\text{dam}}}$ & \makecell[l]{Minimum/maximum change of \\ position of the  $i$-th damper} & $x^i_{\text{dam}}$ \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
+
 
 % TODO: add definition and use of mathematical norms, 1,2,inf
 \renewcommand{\arraystretch}{2.5}
