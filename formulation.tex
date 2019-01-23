@@ -196,13 +196,13 @@ comfort bounds. The constrainst can be time-varying.
 		\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$}  \\ 
 		\midrule
 		\multirow{8}{*}{\textbf{Temperatures}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & -  & - & - \\ 
-		& $T_{\text{z}}$ & Zone perative temperatures  & - & $\bullet$ & -  & - \\
+		& $T_{\text{z}}$ & Zone operative temperatures  & - & $\bullet$ & -  & - \\
 		& $T_{\text{sup}}$ & Air/water supply temperatures &  - & - & $\bullet$ & -  \\
-		& $T_{\text{ret}}$ & Air/water return temperature of the component $i$ &  - & - & $\bullet$ & - \\
+		& $T_{\text{ret}}$ & Air/water return temperature &  - & - & $\bullet$ & - \\
 		& $T_\text{e}$ & Ambient temperature &  - & - & - & $\bullet$ \\
 		& $T_\text{b}$ & Borefield wall temperature & $\bullet$ & - & - & - \\
 			& $T_\text{g}$ & Borefield undisturbed ground temperature & $\bullet$ & - & - & - \\
-			& $T_{\text{sg}i}$ & Borefield surrounding ground temperature at distance $i$ & $\bullet$ & - & - & - \\
+			& $T_{\text{sg,}i}$ & Borefield surrounding ground temperature at distance $i$ & $\bullet$ & - & - & - \\
 		\midrule
 		\multirow{5}{*}{\textbf{Heat flows}} 
 % 		& $Q$ & Total heat flow  of HVAC components & - & - & $\bullet$ & -  \\
@@ -269,7 +269,11 @@ comfort bounds. The constrainst can be time-varying.
 		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
 		Heat flow limit & $\underline{Q^i_{\text{HVAC}}},\overline{Q^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum heat flow of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		Heat flow rate of change & $\underline{\Delta Q^i_{\text{HVAC}}},\overline{\Delta Q^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum heat flow rate of \\ change of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		Change of heat flow rate & $\underline{\Delta Q^i_{\text{HVAC}}},\overline{\Delta Q^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum change of \\ heat flow rate of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		Change of diff. pressure & $\underline{\Delta\Delta p^i},\overline{\Delta\Delta p^i}$ & \makecell[l]{Minimum/maximum change of \\ diff. pressure of the  $i$-th fan/pump} & $\Delta p^i$ \\
+		Change of speed & $\underline{\Delta x^i_{\text{mov}}},\overline{\Delta x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum change of \\ speed of the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
+		Change of valve position & $\underline{\Delta x^i_{\text{val}}},\overline{\Delta x^i_{\text{val}}}$ & \makecell[l]{Minimum/maximum change of \\ position of the  $i$-th valve} & $x^i_{\text{val}}$ \\
+		Change of damper position & $\underline{\Delta x^i_{\text{dam}}},\overline{\Delta x^i_{\text{dam}}}$ & \makecell[l]{Minimum/maximum change of \\ position of the  $i$-th valve} & $x^i_{\text{dam}}$ \\
 		\midrule
 		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
