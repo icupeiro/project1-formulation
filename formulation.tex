@@ -69,12 +69,12 @@ iago.cupeirofigueroa@kuleuven.be\textsuperscript{2} \\
 
 \section*{ABSTRACT}
 
-This document contains the MPC formulation template within the frame of the IBPSA Project 1.
-The proposed template aims to adapt all possible formulations for the different types of models and key performance indicators (KPIs) in consideration.
+This document describes the MPC formulation template as used within the frame of the IBPSA Project 1.
+The proposed template aims to uniformize all possible formulations for the different types of models and key performance indicators (KPIs) in consideration.
 It has to be general.
 To this end, we choose the control engineering notation as our starting point,
 since it considers the formulation in a general way from an abstract point of view.
-From here, we  move to a formulation with physical meanind based on the specific characteristics of the building sector.
+From here, we move to a formulation with physical meaning based on the specific characteristics of buildings.
 
 %\section*{NOMENCLATURE}
 %
@@ -92,9 +92,9 @@ From here, we  move to a formulation with physical meanind based on the specific
 %\end{samepage}
 
 
-\section{CONTROL ENGINEERING NOTATION}
+\section{CONTROL ENGINEERING NOTATION}\label{sec:control_notation}
 
-General MPC formulation can be cast as a following optimal control problem (OCP) in discrete time
+The general MPC formulation can be cast as an optimal control problem (OCP) in discrete time:
 \begin{subequations}
 	\label{eq:mpc_general_formal}
 	\begin{align}
@@ -113,76 +113,74 @@ General MPC formulation can be cast as a following optimal control problem (OCP)
 \end{subequations}
 where $x_k \in \mathbb{R}^{n_x}$, $y_k \in \mathbb{R}^{n_y}$, $u_k \in \mathbb{R}^{n_u}$, $d_k \in \mathbb{R}^{n_d}$ and $r_k \in \mathbb{R}^{n_r}$ denote the values of states, outputs,
 inputs, disturbances and reference signals, respectively, at the $k$-th step of the prediction horizon $N$. 
-Objective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty,
-while $\ell(x_k,u_k)$  is called a stage cost and its
-purpose is to assign a cost to a particular choice of $x_k$ and
-$u_k$.
+The bjective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty,
+while $\ell(x_k,y_k,u_k,r_k)$  is called a stage cost and its
+purpose is to assign a cost to a particular choice of $x_k$, $y_k$, $u_k$ and
+$r_k$.
 The predictions of the state values are obtained from the state update equation~\eqref{eq:mpc_general_formal:xp}, while values of the predicted outputs are given by
 the output equation~\eqref{eq:mpc_general_formal:yp}.
 States and inputs are subject to
 constraints~\eqref{eq:mpc_general_formal:ub} and~\eqref{eq:mpc_general_formal:xb}.
-Initial conditions of the problem are given by~\eqref{eq:mpc_general_formal:x0} for the state variables which are either  measured or estimated, and by~\eqref{eq:mpc_general_formal:d0} for the disturbances which are measured for the current timestep and forecasted for the future.
-For generality we can denote by $\xi$ the vector that encapsulates all time-varying parameters
+The initial conditions of the problem are given by~\eqref{eq:mpc_general_formal:x0} for the state variables, which are either  measured or estimated, and by~\eqref{eq:mpc_general_formal:d0} for the disturbances which are measured for the current timestep and forecasted for the future.
+For the sake of generality we denote by $\xi$ the vector that encapsulates all time-varying parameters
 of~\eqref{eq:mpc_general_formal}, i.e. the current states $x(t)$,
-current and future disturbances $d(t), \ldots, d(t+N T_s)$, or possibly other parameters such as comfort boundaries or reference signals which depend on specific formulation.
+current and future disturbances $d(t), \ldots, d(t+N T_s)$, and possibly other parameters such as comfort boundaries or reference signals which depend on the specific formulation.
 
 \section{MPC FORMULATION IN BUILDINGS: GRANTING A PHYSICAL MEANING }
 
-Now that the MPC abstract formulation has been defined, 
-physical meaning and ranges of variables have to be specified.
+In Section~\ref{sec:control_notation} the abstract MPC formulation has been defined, 
+now physical meaning and ranges of variables have to be specified.
 Table~\ref{tab:mpc_form:translation} summarizes the most common
 variables used in building control and maps them with the abstract
 notation from the control engineering notation. 
-because these variables are usually vectors, we will indicate  the
-$i$-th element of the vector variable via supercsript $i$.
-For instance the operative temperature in $i$-th zone will be denoted as $T_z^i$.
+Because these variables are usually vectors, we indicate the
+$i$-th element of the vector variable via supercsript $i$,
+for instance the operative temperature in the $i$-th zone is denoted as $T_z^i$.
 
-An overview of the most common modifying and bounding parameters in building control together with their associated varialbes  is given in Table~\ref{tab:mpc_form:parameters:modifiers} and Table~\ref{tab:mpc_form:parameters:bounds}, respectively.
-Please note that these parameters can be treated either as a constant numerial values or time-varying parameters. In the latter case the variables can be technically labeled as a reference signals $r$ within MPC formulation.
+An overview of the most common modifying and bounding parameters in building control together with their associated variables is presented in Table~\ref{tab:mpc_form:parameters:modifiers} and Table~\ref{tab:mpc_form:parameters:bounds}, respectively.
+These parameters can be treated either as constant numerical values or time-varying parameters. In the latter case the variables can be technically labeled as reference signals $r$ within the MPC formulation.
 
 Table~\ref{tab:mpc_form:objectives} recaps the most common objectives used 
 in the MPC formulation. These objectives can be combined in a multi-objective
-function. Since the main objective of building control is the maximization of 
-the occupant comfort while using as less resources as possible,
+function. Since the main objective of building control is the maximization of occupants comfort while using as little resources as possible,
 usually two conflicting terms are found: an energy-related term
 and a comfort related term.   
  
 The energy used by the building stands for the sum of the energy of each
-HVAC component $Q^i_{\text{HVAC}}$.
-Generally, the power $P^i_{\text{HVAC}}$ of $i$-th HVAC component can be calculated as the
-ratio between the heat that it delivers $Q^i_{\text{HVAC}}$ and its efficiency $COP^i, EER^i$ or $\eta^i$. 
+HVAC component $\dot{Q^i_{\text{HVAC}}}$.
+Generally, the power $P^i_{\text{HVAC}}$ of $i$-th HVAC component can be calculated as the time integral of the
+ratio between the thermal power that it delivers $Q^i_{\text{HVAC}}$ and its efficiency $COP^i, EER^i$ or $\eta^i$. 
 These efficiencies are parameters that can be considered either constant or variable
-in function of the inputs, states and disturbances.
+as a function of the inputs, states and disturbances.
 The energy use
 minimisation function can be further transformed to monetary cost  using a price factor  $p^i$, which can be added to the formulation 
 as variable (in electric-based components), constant (in fuel-based components) or even negative 
-(renewable-based components that pour energy into the grid) parameter.
-The emission factor $e^i$ converts the energy into the associatted $CO_2$ emissions 
-for the $i$-th component  and it can be variable on electric-based components,
-constant for fuel-based components and zero on renewable-based components.
+(renewable-based components that inject energy into the grid) parameter.
+The emission factor $e^i$ converts the energy used into the associated $CO_2$ emissions 
+for the $i$-th component which can be variable for electric-based components,
+constant for fuel-based components and zero for renewable-based components.
 The renewable energy sources (RES) share $r^i$ represents the fraction of renewable
-energy coming from the  $i$-th component and depends on the share of the grid for
-electric-based components, for fuel-based ones the share is zero and for
-renewable-based components the share would be unitary.
-The discomfort is typically evaluated via slack variable $s_k$ which denotes violation of associated comfort  zone for a particular physical variable, e.g. zone operative temperature $T_z$.
+energy coming from the  $i$-th component and depends on the RES share of the grid for
+electric-based components. The share is zero for fuel-based ones and for
+renewable-based components the share would be 100\%.
+The discomfort is typically evaluated via slack variable $s_k$ which denotes the violation of associated comfort for a particular physical variable, e.g. zone operative temperature $T_z$.
 The balance between the different objectives is typically adjusted
-by means of weighting terms $Q_{xx}$ to give more or less priority to the associated objective term $\ell_{xx}$.
-For example the penalization on control inputs can be expressed as $Q_{u}$.
+by means of weighting factors $Q_{xx}$ to give more or less priority to the associated objective term $\ell_{xx}$.
+For example the penalization on control inputs can be weighted by $Q_{u}$.
 
-In general, there are two types of constraints,
-inequality  (control inputs range, comfort zones, etc.) and equality 
+In general, there are two types of constraints:
+inequality (control inputs range, comfort zones, etc.) and equality 
 (building model dynamics, rate limits, etc.) constraints.
-A recap of the most common constraints in building control can be found at
+A recap of the most common constraints in building control can be found in
 Table \ref{tab:mpc_form:constraints}.
 The constraints which satisfaction is mandatory are called 
-\textit{hard constraints}. For example, hard control actions
-bounds define the minumum $\underline{u}_k$ and maximum $\overline{u}_k$ allowed values fo the contol variables.
+\textit{hard constraints}. For example, hard control action
+bounds define the minumum $\underline{u}_k$ and maximum $\overline{u}_k$ allowed values for the contol variables.
  On the other hand, the constraints which can 
 be violated are known as \textit{soft constraints}. They are usually relaxed
-by additional slack variables $s_k$ that are added to and
+by slack variables $s_k$ that are added to and
 penalized in the objective function (see Comfort objective in Table
-\ref{tab:mpc_form:objectives}), trying to keep within the established
-comfort bounds. The constrainst can be time-varying.
+\ref{tab:mpc_form:objectives}), trying to keep them within the bounds set. All constraints can be time-varying.
 
 % TODO: Q_i is conflicting notation with weights, keep using Q_{HVAC}^i
 % TODO: we could add units
@@ -197,7 +195,7 @@ comfort bounds. The constrainst can be time-varying.
 		\toprule
 		\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$}  \\ 
 		\midrule
-		\multirow{8}{*}{\textbf{Temperatures}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & -  & - & - \\ 
+		\multirow{8}{*}{\textbf{Temperatures [$^\circ C$]}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & -  & - & - \\ 
 		& $T_{\text{z}}$ & Zone operative temperatures  & - & $\bullet$ & -  & - \\
 		& $T_{\text{sup}}$ & Air/water supply temperatures &  - & - & $\bullet$ & -  \\
 		& $T_{\text{ret}}$ & Air/water return temperature &  - & - & $\bullet$ & - \\
@@ -206,35 +204,49 @@ comfort bounds. The constrainst can be time-varying.
 			& $T_\text{g}$ & Borefield undisturbed ground temperature & $\bullet$ & - & - & - \\
 			& $T_{\text{sg,}i}$ & Borefield surrounding ground temperature at distance $i$ & $\bullet$ & - & - & - \\
 		\midrule
-		\multirow{5}{*}{\textbf{Heat flows}} 
-% 		& $Q$ & Total heat flow  of HVAC components & - & - & $\bullet$ & -  \\
-		& $Q_{\text{HVAC}}$ & Heat flow of  HVAC components  & - & - &  $\bullet$ &- \\
-		& $Q_{\text{rad}}$ & Solar radiation & - & - & - & $\bullet$  \\
-		& $Q_{\text{occ}}$ & Occupancy internal gains & - & - & - & $\bullet$  \\
-		& $Q_{\text{lig}}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$  \\
+		\multirow{2}{*}{\textbf{Thermal energy $[J]$}} 
+		% 		& $Q$ & Total heat flow  of HVAC components & - & - & $\bullet$ & -  \\
+		& $Q_{\text{HVAC}}$ & Thermal energy of the HVAC components  & - & - &  $\bullet$ & - \\
+		& $Q_{\text{b}}$ & Thermal energy injected/extracted into/from the borefield & - & - & $\bullet$ & -  \\
 		\midrule
-		\multirow{3}{*}{\textbf{Power used}} 
+		\multirow{5}{*}{\textbf{Thermal power $[W]$}} 
+% 		& $Q$ & Total heat flow  of HVAC components & - & - & $\bullet$ & -  \\
+		& $\dot{Q}_{\text{HVAC}}$ & Thermal power of  HVAC components  & - & - &  $\bullet$ &- \\
+		& $\dot{Q}_{\text{rad}}$ & Solar radiation & - & - & - & $\bullet$  \\
+		& $\dot{Q}_{\text{occ}}$ & Occupancy internal gains & - & - & - & $\bullet$  \\
+		& $\dot{Q}_{\text{lig}}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$  \\
+		& $\dot{Q}_{\text{app}}$ & Appliances internal gains & - & - & $\bullet$ & $\bullet$  \\
+		\midrule
+		\multirow{3}{*}{\textbf{Electrical energy $[J]$}} 
+		% 	& $P$ & Total power  of HVAC components & - & - & $\bullet$ & - \\
+		& $E_{\text{HVAC}}$ & Electrical energy used by HVAC components & - & - &  $\bullet$ &- \\
+		& $E_{\text{lig}}$ & Electrical energy used by lighting & - & - & $\bullet$ & $\bullet$ \\
+		& $E_{\text{app}}$ & Electrical energy used by appliances & - & - & $\bullet$ & $\bullet$ \\
+		\midrule
+		\multirow{3}{*}{\textbf{Electrical power $[W]$}} 
 % 	& $P$ & Total power  of HVAC components & - & - & $\bullet$ & - \\
 		& $P_{\text{HVAC}}$ & Power of HVAC components & - & - &  $\bullet$ &- \\
 		& $P_{\text{lig}}$ & Lighting power & - & - & $\bullet$ & $\bullet$ \\
+		& $P_{\text{app}}$ & Appliances power & - & - & $\bullet$ & $\bullet$ \\
 \midrule
-		\multirow{2}{*}{\textbf{Mass flows}} &
-		$m_{\text{wat}}$ & Water mass flow & - & - & $\bullet$ & - \\
-		& $m_{\text{air}}$ & Air mass flow & - & - & $\bullet$ & - \\
+		\multirow{2}{*}{\textbf{Mass flows $[kg/s]$}} &
+		$\dot{m}_{\text{wat}}$ & Water mass flow & - & - & $\bullet$ & - \\
+		& $\dot{m}_{\text{air}}$ & Air mass flow & - & - & $\bullet$ & - \\
 		\midrule
-		\multirow{4}{*}{\textbf{\shortstack[l]{Component signals }}} 
+		\multirow{5}{*}{\textbf{\shortstack[l]{Component signals }}} 
 % 		& $T^{set}_{\text{sup}}$ & Supply system set-points & - & - & $\bullet$ & - \\
 % 		& $T^{set}_{z}$ & Zone set-point & - & - & $\bullet$ & - \\
-		& $\Delta p$ & Pump/fan dif. pressure & - & - & $\bullet$ & - \\
+		& $x_{HVAC}$ & ON/OFF/Modulated signal of HVAC components & - & - & $\bullet$ & - \\
+		& $\Delta p$ & Pump/fan dif. pressure $[kPa]$ & - & - & $\bullet$ & - \\
 		& $x_{\text{mov}}$ & Pump/fan speed signal & - & - & $\bullet$ & - \\
 		& $x_{\text{val}}$ & Valve positions & - & - & $\bullet$ & - \\
 		& $x_{\text{dam}}$ & Damper positions & - & - & $\bullet$ & - \\
 		\midrule
 		\multirow{4}{*}{\textbf{\shortstack[l]{Indoor Environmental \\ Quality (IEQ)}}} &
 		$PMV$ & Predicted mean vote & - & $\bullet$ & - & - \\
-		& $CO_2$ & $CO_2$ concentration in air & - & $\bullet$ & - & $\bullet$ \\
-		& $\phi$ & Humidity & - & $\bullet$ & - & $\bullet$ \\
-		& $E_{\text{v}}$ & Illuminance & - & $\bullet$ & - & $\bullet$ \\
+		& $CO_2$ & $CO_2$ concentration in air $[ppm]$ & - & $\bullet$ & - & $\bullet$ \\
+		& $\phi$ & Relative humidity & - & $\bullet$ & - & $\bullet$ \\
+		& $E_{\text{v}}$ & Illuminance $[lx]$ & - & $\bullet$ & - & $\bullet$ \\
 		\bottomrule 
 	\end{tabular}
 \end{table} 
@@ -250,23 +262,25 @@ comfort bounds. The constrainst can be time-varying.
 		\toprule
 		\textbf{Energy efficiencies}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-		\makecell[l]{Coefficient of \\ performance} & $COP^i$ &  \makecell[l]{Heating efficiency of heat pump \\ or air conditioning system $i$} & $T_{sup}, Q^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
-		\makecell[l]{Energy efficiency \\ ratio} & $EER^i$ & \makecell[l]{Cooling efficiency of heat pump \\ or air conditioning system $i$} & $T_{sup}, Q^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
-		Efficiency & $\eta^i$ & \makecell[l]{Efficiency of other  $i$-th system} & $T_{sup}, Q^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		\makecell[l]{Coefficient of \\ performance} & $COP^i$ &  \makecell[l]{Coefficient of performance \\ of heat pump $i$} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		\makecell[l]{Energy efficiency \\ ratio} & $EER^i$ & \makecell[l]{Cooling efficiency of \\ air conditioning system $i$} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		Efficiency & $\eta^i$ & \makecell[l]{Efficiency of other  $i$-th system} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		\makecell[l]{Seasonal coefficient of \\ performance} & $SCOP^i$ &  \makecell[l]{Seasonal coefficient of performance \\ of heat pump $i$} & $T_{sup}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$ \\
+		\makecell[l]{Seasonal energy efficiency \\ ratio} & $SEER^i$ & \makecell[l]{Seasonal cooling efficiency of \\ air conditioning system $i$} & $T_{sup}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$  \\
 		\midrule
 		\textbf{Other energy factors}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
 		Price factor & $p^i$ &  \makecell[l]{Conversion factor from energy \\ to monetary cost of component $i$} & $Q^i_{\text{HVAC}}$ \\
 		Emission factor & $e^i$ & \makecell[l]{Conversion factor from energy \\ to $CO_2$ emissions of component $i$} & $Q^i_{\text{HVAC}}$ \\
-		RES factor & $r^i$ & \makecell[l]{Ratio of renewable energy of \\ the considered component $i$} & $Q^i_{\text{HVAC}}$ \\
+		RES factor & $r^i$ & \makecell[l]{Share of renewable energy of \\ the considered component $i$} & $Q^i_{\text{HVAC}}$ \\
 			\midrule
 		\textbf{Heat flow parameters}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		Specific heat capacity & $c_p^i$ & \makecell[l]{Specific heat capacity of \\ $i$-th medium} & $T_{sup}, T_{ret}, m_{\text{wat}}, m_{\text{air}}, Q^i_{\text{HVAC}}$ \\
+		Specific heat capacity & $c_p^i$ & \makecell[l]{Specific heat capacity of \\ $i$-th medium} & $T_{sup}, T_{ret}, \dot{m}_{\text{wat}}, \dot{m}_{\text{air}}, \dot{Q}^i_{\text{HVAC}}$ \\
 		\midrule
 		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		\makecell[l]{Arbitrary weighting \\ term} & $Q_{\text{xx}}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & $x,y,u,d,r$ \\
+		\makecell[l]{Weighting factor} & $Q_{\text{xx}}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & $x,y,u,d,r$ \\
 		\makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
 		&  $T_{z}, CO_{2}, PMV, \phi, E_{\text{v}}$\\
 		\makecell[l]{Time-step} & $t_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} & $x,y,u,d,r$  \\
@@ -293,8 +307,8 @@ comfort bounds. The constrainst can be time-varying.
 		\bottomrule 
 		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} \\
 		\midrule
-		Heat flow limit & $\underline{Q^i_{\text{HVAC}}},\overline{Q^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum heat flow of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		Change of heat flow rate & $\underline{\Delta Q^i_{\text{HVAC}}},\overline{\Delta Q^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum change of \\ heat flow rate of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		Thermal power limit & $\underline{\dot{Q}^i_{\text{HVAC}}},\overline{\dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum thermal power of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		Change of thermal power rate & $\underline{\Delta \dot{Q}^i_{\text{HVAC}}},\overline{\Delta \dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum change of \\ thermal power rate of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
 		Pump diff. pressure limit & $\underline{\Delta p^i},\overline{\Delta p^i}$ & \makecell[l]{Minimum/maximum diff. pressure \\  of the  $i$-th fan/pump} & $\Delta p^i$ \\
 		Change of pump diff. pressure & $\underline{\Delta\Delta p^i},\overline{\Delta\Delta p^i}$ & \makecell[l]{Minimum/maximum change of \\ diff. pressure of the  $i$-th fan/pump} & $\Delta p^i$ \\
 		Pump speed limit & $\underline{ x^i_{\text{mov}}},\overline{ x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum  speed of \\  the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
@@ -319,12 +333,12 @@ comfort bounds. The constrainst can be time-varying.
 		\toprule
 		\textbf{Linguistic objective}  & \textbf{MPC formulation} \\
 		\midrule
-		Minimise energy use &   $  \sum_{i=1}^{n_u} \dfrac{Q^{i}_{\text{HVAC}}}{\eta^i}$ \\
-		Minimise cost & $  \sum_{i=1}^{n_u} p^i \dfrac{Q^{i}_{\text{HVAC}}}{\eta^i}$  \\
-		Minimise $CO_2$ emissions & $ \sum_{i=1}^{n_u}  e^i \dfrac{Q^{i}_{\text{HVAC}}}{\eta^i}$  \\
-		Maximise RES &  $ \sum_{i=1}^{n_u} (1-r^i) \dfrac{Q^{i}_{\text{HVAC}}}{\eta_i}$  \\
-		Flexibility & ???  \\
-		Minimize discomfort &  $ \sum_{i=1}^{n_y} ||s^i||^2_2$ \\
+		Minimise energy use &   $  \min\sum_{i=1}^{n_u} \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta^i}$ \\
+		Minimise cost & $  \min\sum_{i=1}^{n_u} p^i \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta^i}$  \\
+		Minimise $CO_2$ emissions & $ \min\sum_{i=1}^{n_u}  e^i \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta^i}$  \\
+		Maximise RES &  $ \min\sum_{i=1}^{n_u} (1-r^i) \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta_i}$  \\
+		Flexibility & TBD  \\
+		Minimize discomfort &  $ \min\sum_{i=1}^{n_y} ||s^i||^2_2$ \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
@@ -340,10 +354,10 @@ comfort bounds. The constrainst can be time-varying.
 		\textbf{Linguistic constraint}  &  \multicolumn{3}{c}{\textbf{MPC formulation}} \\
 		& Class &  Control notation &  Physical notation \\
 		\midrule
-		Model dynamics & hard equality & $ x_{k+1} = f(x_k,u_k,d_k) $  & $ T_{k+1} = f(T_k,Q_{\text{HVAC},k},T_{\text{e},k},Q_{\text{rad},k},Q_{\text{occ},k},Q_{\text{lig},k}) $ \\ 
-		Component limitations & hard inequality & $ \underline{u}_k \le u_k \le \overline{u}_k  $  & $ \underline{Q_{\text{HVAC}}}_k  \le Q_{\text{HVAC},k}  \le \overline{Q_{\text{HVAC}}}_k  $ \\ 
-		Component difference & hard equality & $\Delta u_k = u_{k-1} - u_k $  & $\Delta Q_{\text{HVAC},k} = Q_{\text{HVAC},k-1} - Q_{\text{HVAC},k} $  \\ 
-		Component rate of change & hard inequality & $ \underline{\Delta u}_k   \le \Delta u_k  \le \overline{\Delta u}_k  $ & $ \underline{\Delta Q_{\text{HVAC}}}_k   \le \Delta Q_{\text{HVAC},k}  \le \overline{\Delta Q_{\text{HVAC}}}_k  $ \\ 
+		Model dynamics & hard equality & $ x_{k+1} = f(x_k,u_k,d_k) $  & $ T_{k+1} = f(T_k,\dot{Q}_{\text{HVAC},k},T_{\text{e},k},\dot{Q}_{\text{rad},k},\dot{Q}_{\text{occ},k},\dot{Q}_{\text{lig},k}) $ \\ 
+		Component limitations & hard inequality & $ \underline{u}_k \le u_k \le \overline{u}_k  $  & $ \underline{\dot{Q}_{\text{HVAC}}}_k  \le \dot{Q}_{\text{HVAC},k}  \le \overline{\dot{Q}_{\text{HVAC}}}_k  $ \\ 
+		Component difference & hard equality & $\Delta u_k = u_{k-1} - u_k $  & $\Delta \dot{Q}_{\text{HVAC},k} = \dot{Q}_{\text{HVAC},k-1} - \dot{Q}_{\text{HVAC},k} $  \\ 
+		Component rate of change & hard inequality & $ \underline{\Delta u}_k   \le \Delta u_k  \le \overline{\Delta u}_k  $ & $ \underline{\Delta \dot{Q}_{\text{HVAC}}}_k   \le \Delta \dot{Q}_{\text{HVAC},k}  \le \overline{\Delta \dot{Q}_{\text{HVAC}}}_k  $ \\ 
 		Temperature comfort zone & soft inequality & $ \underline{y}_k - s_k \le y_k \le \overline{y}_k + s_k $  & $ \underline{T_{\text{z}}}_k - s^{T_{\text{z}}}_{k} \le T_{\text{z}} \le \overline{T_{\text{z}}}_k + s^{T_{\text{z}}}_{k} $ \\
 		$CO_2$ concentration & soft inequality & $ \underline{y}_k - s_k \le y_k \le \overline{y}_k + s_k $ & $ \underline{{CO_2}}_k - s^{CO_2}_k \le CO_2 \le \overline{{CO_2}}_k + s^{CO_2}_k $  \\
 		Predicted mean vote &  soft inequality & $ \underline{y}_k - s_k \le y_k \le \overline{y}_k + s_k $ & $ \underline{PMV}_k - s^{PMV}_k \le PMV \le \overline{PMV}_k + s^{PMV}_k $  \\
@@ -354,9 +368,9 @@ comfort bounds. The constrainst can be time-varying.
 \end{table}
 
 
-\bibliographystyle{apacite}
-\bibliography{template}
-\vspace{24pt}
+%\bibliographystyle{apacite}
+%\bibliography{template}
+%\vspace{24pt}
 
 
 \section*{ACKNOWLEDGMENTS}
@@ -365,7 +379,7 @@ This work emerged from the IBPSA Project 1, an international project conducted u
 
 The authors acknowledge the financial support by the European Union through  the EU-H2020-GEOT\euro CH 
 project ‘Geothermal Technology for \euro conomic Cooling and Heating’ 
-and within the H2020-EE-2016-RIA-IAprogramme for the project ‘Model Predictive Control and Innovative System Integration of GEOTABS;-) 
+and within the H2020-EE-2016-RIA-IA programme for the project ‘Model Predictive Control and Innovative System Integration of GEOTABS;-) 
 in Hybrid Low Grade Thermal Energy Systems - Hybrid MPC GEOTABS’ (grant number 723649 - MPC-; GT). 
 
 \end{document}
