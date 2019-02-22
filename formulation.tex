@@ -21,6 +21,8 @@
 \usepackage{graphicx}
 \usepackage[font=bf]{caption}
 
+\usepackage{changepage}  % allows to use adjustwidth
+
 \usepackage{titlesec} 
 %\titleformat{command}[shape]{format}{label}{sep}{before}[after]
 \titleformat{\section}[hang]{\fontsize{12pt}{1em}\selectfont \bfseries}{\thesection. }{0pt}{\centering \MakeUppercase}
@@ -113,7 +115,7 @@ The general MPC formulation can be cast as an optimal control problem (OCP) in d
 \end{subequations}
 where $x_k \in \mathbb{R}^{n_x}$, $y_k \in \mathbb{R}^{n_y}$, $u_k \in \mathbb{R}^{n_u}$, $d_k \in \mathbb{R}^{n_d}$ and $r_k \in \mathbb{R}^{n_r}$ denote the values of states, outputs,
 inputs, disturbances and reference signals, respectively, at the $k$-th step of the prediction horizon $N$. 
-The bjective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty,
+The objective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty,
 while $\ell(x_k,y_k,u_k,r_k)$  is called a stage cost and its
 purpose is to assign a cost to a particular choice of $x_k$, $y_k$, $u_k$ and
 $r_k$.
@@ -189,6 +191,7 @@ penalized in the objective function (see Comfort objective in Table
 	\centering
 	\caption{MPC variables notation and translation between physical and abstract domain.}
 	\label{tab:mpc_form:translation}
+	\begin{adjustwidth}{-1cm}{}
 	\begin{tabular}{l|c|l|cccc}
 		\toprule
 		\multicolumn{3}{l}{\textbf{Physical domain}} &  \multicolumn{4}{r}{\textbf{Abstract domain}} \\
@@ -249,6 +252,7 @@ penalized in the objective function (see Comfort objective in Table
 		& $E_{\text{v}}$ & Illuminance $[lx]$ & - & $\bullet$ & - & $\bullet$ \\
 		\bottomrule 
 	\end{tabular}
+	 \end{adjustwidth}
 \end{table} 
 
 
@@ -260,7 +264,7 @@ penalized in the objective function (see Comfort objective in Table
 	\label{tab:mpc_form:parameters:modifiers}
 	\begin{tabular}{l|c|l|c}
 		\toprule
-		\textbf{Energy efficiencies}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
+		\textbf{Energy efficiencies}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Variables} \\
 		\midrule
 		\makecell[l]{Coefficient of \\ performance} & $COP^i$ &  \makecell[l]{Coefficient of performance \\ of heat pump $i$} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
 		\makecell[l]{Energy efficiency \\ ratio} & $EER^i$ & \makecell[l]{Cooling efficiency of \\ air conditioning system $i$} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
@@ -268,22 +272,23 @@ penalized in the objective function (see Comfort objective in Table
 		\makecell[l]{Seasonal coefficient of \\ performance} & $SCOP^i$ &  \makecell[l]{Seasonal coefficient of performance \\ of heat pump $i$} & $T_{sup}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$ \\
 		\makecell[l]{Seasonal energy efficiency \\ ratio} & $SEER^i$ & \makecell[l]{Seasonal cooling efficiency of \\ air conditioning system $i$} & $T_{sup}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$  \\
 		\midrule
-		\textbf{Other energy factors}  & \textbf{Symbol} &  \textbf{Description} \\
+		\textbf{Other energy factors}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Variables} \\
 		\midrule
 		Price factor & $p^i$ &  \makecell[l]{Conversion factor from energy \\ to monetary cost of component $i$} & $Q^i_{\text{HVAC}}$ \\
 		Emission factor & $e^i$ & \makecell[l]{Conversion factor from energy \\ to $CO_2$ emissions of component $i$} & $Q^i_{\text{HVAC}}$ \\
 		RES factor & $r^i$ & \makecell[l]{Share of renewable energy of \\ the considered component $i$} & $Q^i_{\text{HVAC}}$ \\
 			\midrule
-		\textbf{Heat flow parameters}  & \textbf{Symbol} &  \textbf{Description} \\
+		\textbf{Heat flow parameters}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Variables} \\
 		\midrule
 		Specific heat capacity & $c_p^i$ & \makecell[l]{Specific heat capacity of \\ $i$-th medium} & $T_{sup}, T_{ret}, \dot{m}_{\text{wat}}, \dot{m}_{\text{air}}, \dot{Q}^i_{\text{HVAC}}$ \\
 		\midrule
-		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} \\
+		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Variables} \\
 		\midrule
-		\makecell[l]{Weighting factor} & $Q_{\text{xx}}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & $x,y,u,d,r$ \\
-		\makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
+        \makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
 		&  $T_{z}, CO_{2}, PMV, \phi, E_{\text{v}}$\\
+		\makecell[l]{Weighting factor} & $Q_{\text{xx}}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & $x,y,u,d,r$ \\
 		\makecell[l]{Time-step} & $t_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} & $x,y,u,d,r$  \\
+		\makecell[l]{Dimensionality quantifier} & $n_{\text{xx}}$ &  \makecell[l]{Cardinality of the vector elements} & all \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
@@ -297,7 +302,7 @@ penalized in the objective function (see Comfort objective in Table
 	\label{tab:mpc_form:parameters:bounds}
 	\begin{tabular}{l|c|l|c}
 		\toprule
-		\textbf{Comfort bounds}  & \textbf{Symbol} &  \textbf{Description} \\
+		\textbf{Comfort bounds}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Variables} \\
 		\midrule
 		Temperature & $\underline{T_{\text{z}}},\overline{T_{\text{z}}}$ & \makecell[l]{Zone operative temperature  \\ comfort bounds } & $T_{\text{z}}$ \\
 		$CO_2$ concentration & $\underline{CO_2},\overline{CO_2}$ & \makecell[l]{$CO_2$ concentration comfort \\ bounds} & $CO_{2}$ \\
@@ -305,10 +310,10 @@ penalized in the objective function (see Comfort objective in Table
 		Humidity & $\underline{\phi},\overline{\phi}$ &  Humidity comfort bounds & $\phi$  \\
 		Illuminance & $\underline{E_{\text{v}}},\overline{E_{\text{v}}}$ & Illuminance comfort bounds & $E_{\text{v}}$  \\
 		\bottomrule 
-		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} \\
+		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Variables} \\
 		\midrule
 		Thermal power limit & $\underline{\dot{Q}^i_{\text{HVAC}}},\overline{\dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum thermal power of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		Change of thermal power rate & $\underline{\Delta \dot{Q}^i_{\text{HVAC}}},\overline{\Delta \dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum change of \\ thermal power rate of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		Change of thermal power rate & $\underline{\Delta \dot{Q}^i_{\text{HVAC}}},\overline{\Delta \dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum change of  thermal power \\ rate  of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
 		Pump diff. pressure limit & $\underline{\Delta p^i},\overline{\Delta p^i}$ & \makecell[l]{Minimum/maximum diff. pressure \\  of the  $i$-th fan/pump} & $\Delta p^i$ \\
 		Change of pump diff. pressure & $\underline{\Delta\Delta p^i},\overline{\Delta\Delta p^i}$ & \makecell[l]{Minimum/maximum change of \\ diff. pressure of the  $i$-th fan/pump} & $\Delta p^i$ \\
 		Pump speed limit & $\underline{ x^i_{\text{mov}}},\overline{ x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum  speed of \\  the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
@@ -327,18 +332,21 @@ penalized in the objective function (see Comfort objective in Table
 \begin{table}[h]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
-	\caption{Individual terms of MPC objective $\ell(x_k, y_k, u_k, d_k, r_k)$.}
+	\caption{Additive terms of MPC objective $\min  \sum_{k=0}^{N-1} \ell(x_k, y_k, u_k, d_k, r_k)$.}
 	\label{tab:mpc_form:objectives}
-	\begin{tabular}{l|c}
+	\begin{tabular}{l|lll}
 		\toprule
-		\textbf{Linguistic objective}  & \textbf{MPC formulation} \\
+		\textbf{Linguistic objective}  &  \multicolumn{3}{c}{\textbf{MPC formulation}} \\
+		& Class &  Control notation &  Physical notation \\
 		\midrule
-		Minimise energy use &   $  \min\sum_{i=1}^{n_u} \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta^i}$ \\
-		Minimise cost & $  \min\sum_{i=1}^{n_u} p^i \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta^i}$  \\
-		Minimise $CO_2$ emissions & $ \min\sum_{i=1}^{n_u}  e^i \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta^i}$  \\
-		Maximise RES &  $ \min\sum_{i=1}^{n_u} (1-r^i) \dfrac{\dot{Q}^{i}_{\text{HVAC}}}{\eta_i}$  \\
-		Flexibility & TBD  \\
-		Minimize discomfort &  $ \min\sum_{i=1}^{n_y} ||s^i||^2_2$ \\
+% 		\textbf{Linguistic objective}  & \textbf{MPC formulation} \\
+		\midrule
+		Minimise energy use & linear  &  $  \sum_{i=1}^{n_u} \dfrac{u^{i}_{k}}{\eta^i}$ &  $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$ \\
+		Minimise cost & linear &  $  \sum_{i=1}^{n_u} p^i \dfrac{u^{i}_{k}}{\eta^i}$ & $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} p^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
+		Minimise $CO_2$ emissions & linear &  $  \sum_{i=1}^{n_u} e^i \dfrac{u^{i}_{k}}{\eta^i}$ &  $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}}  e^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
+		Maximise RES &  linear &  $  \sum_{i=1}^{n_u} (1-r^i) \dfrac{u^{i}_{k}}{\eta^i}$ & $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} (1-r^i) \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
+		Minimize discomfort &  quadratic &  $ \sum_{i=1}^{n_s} ||s^i_k||^2_2$ &  $ \sum_{i=1}^{n_{s^{T_{\text{z}}}}} ||s^{T_{\text{z}},i}_k||^2_2$  \\
+		Flexibility &  TBD & TBD  & TBD \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
@@ -349,6 +357,7 @@ penalized in the objective function (see Comfort objective in Table
 	\centering
 	\caption{MPC formulation constraints.}
 	\label{tab:mpc_form:constraints}
+	\begin{adjustwidth}{-1cm}{}
 	\begin{tabular}{l|lll}
 		\toprule
 		\textbf{Linguistic constraint}  &  \multicolumn{3}{c}{\textbf{MPC formulation}} \\
@@ -365,6 +374,7 @@ penalized in the objective function (see Comfort objective in Table
 		Illuminance & soft inequality & $ \underline{y}_k - s_k \le y_k \le \overline{y}_k + s_k $ & $ \underline{{E_\text{v}}}_k - s^{E_\text{v}}_k \le E_\text{v} \le \overline{{E_\text{v}}}_k + s^{E_\text{v}}_k $  \\
 		\bottomrule 
 	\end{tabular}
+	\end{adjustwidth}
 \end{table}
 
 
