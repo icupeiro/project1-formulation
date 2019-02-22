@@ -155,7 +155,7 @@ ratio between the thermal power that it delivers $Q^i_{\text{HVAC}}$ and its eff
 These efficiencies are parameters that can be considered either constant or variable
 as a function of the inputs, states and disturbances.
 The energy use
-minimisation function can be further transformed to monetary cost  using a price factor  $p^i$, which can be added to the formulation 
+minimization function can be further transformed to monetary cost  using a price factor  $p^i$, which can be added to the formulation 
 as variable (in electric-based components), constant (in fuel-based components) or even negative 
 (renewable-based components that inject energy into the grid) parameter.
 The emission factor $e^i$ converts the energy used into the associated $CO_2$ emissions 
@@ -341,9 +341,9 @@ penalized in the objective function (see Comfort objective in Table
 		\midrule
 % 		\textbf{Linguistic objective}  & \textbf{MPC formulation} \\
 		\midrule
-		Minimise energy use & linear  &  $  \sum_{i=1}^{n_u} \dfrac{u^{i}_{k}}{\eta^i}$ &  $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$ \\
-		Minimise cost & linear &  $  \sum_{i=1}^{n_u} p^i \dfrac{u^{i}_{k}}{\eta^i}$ & $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} p^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
-		Minimise $CO_2$ emissions & linear &  $  \sum_{i=1}^{n_u} e^i \dfrac{u^{i}_{k}}{\eta^i}$ &  $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}}  e^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
+		Minimize energy use & linear  &  $  \sum_{i=1}^{n_u} \dfrac{u^{i}_{k}}{\eta^i}$ &  $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$ \\
+		Minimize cost & linear &  $  \sum_{i=1}^{n_u} p^i \dfrac{u^{i}_{k}}{\eta^i}$ & $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} p^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
+		Minimize $CO_2$ emissions & linear &  $  \sum_{i=1}^{n_u} e^i \dfrac{u^{i}_{k}}{\eta^i}$ &  $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}}  e^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
 		Maximise RES &  linear &  $  \sum_{i=1}^{n_u} (1-r^i) \dfrac{u^{i}_{k}}{\eta^i}$ & $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} (1-r^i) \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
 		Minimize discomfort &  quadratic &  $ \sum_{i=1}^{n_s} ||s^i_k||^2_2$ &  $ \sum_{i=1}^{n_{s^{T_{\text{z}}}}} ||s^{T_{\text{z}},i}_k||^2_2$  \\
 		Flexibility &  TBD & TBD  & TBD \\
