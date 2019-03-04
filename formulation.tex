@@ -112,13 +112,13 @@ The general MPC formulation can be cast as an optimal control problem (OCP) in d
 	\label{eq:mpc_general_formal:sb}\\
 	%   & \underline{x} \le x_k \le \overline{x}, \label{eq:mpc_general_formal:xb}\\
 	%   & \underline{u} \le u_k \le \overline{u}, \label{eq:mpc_general_formal:ub}\\
-    & d_k = d(t),  & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general_formal:d0} \\
-    & r_k = r(t),  & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general_formal:r0} \\
+    & d_k = d(t + k T_s),  & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general_formal:d0} \\
+    & r_k = r(t + k T_s),  & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general_formal:r0} \\
 	& x_0 = x(t),\label{eq:mpc_general_formal:x0} 
 	\end{align}
 \end{subequations}
 where $x_k \in \mathbb{R}^{n_x}$, $y_k \in \mathbb{R}^{n_y}$, $u_k \in \mathbb{R}^{n_u}$, $d_k \in \mathbb{R}^{n_d}$, $r_k \in \mathbb{R}^{n_r}$ and $s_k \in \mathbb{R}^{n_s}$ denote the values of states, outputs,
-inputs, disturbances, reference signals and slack variables respectively, at the $k$-th step of the prediction horizon $N$. 
+inputs, disturbances, reference signals and slack variables respectively, at the $k$-th step of the prediction horizon $N$ with a sampling time $T_s$. 
 Where $n_{\phi}$ denotes the dimensionality of associated variable $\phi$.
 
 
