@@ -100,7 +100,7 @@ The general MPC formulation can be cast as an optimal control problem (OCP) in d
 \begin{subequations}
 	\label{eq:mpc_general_formal}
 	\begin{align}
-	\min_{u_0, \ldots, u_{N-1}} & \ell_N(x_N) + \sum_{k=0}^{N-1} \ell(x_k, y_k, u_k, r_k, s_k) &
+	\min_{u_0, \ldots, u_{N-1}} & \ell_N(x_N) + \sum_{k=0}^{N-1} \ell_k(x_k, y_k, u_k, r_k, s_k) &
 	\label{eq:mpc_general_formal:cost}\\
 	\text{s.t.} \ & x_{k+1} = f(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:xp} \\
 	& y_{k} = g(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:yp} \\
@@ -119,13 +119,12 @@ The general MPC formulation can be cast as an optimal control problem (OCP) in d
 \end{subequations}
 where $x_k \in \mathbb{R}^{n_x}$, $y_k \in \mathbb{R}^{n_y}$, $u_k \in \mathbb{R}^{n_u}$, $d_k \in \mathbb{R}^{n_d}$, $r_k \in \mathbb{R}^{n_r}$ and $s_k \in \mathbb{R}^{n_s}$ denote the values of states, outputs,
 inputs, disturbances, reference signals and slack variables respectively, at the $k$-th step of the prediction horizon $N$ with a sampling time $T_s$. 
-Where $n_{\phi}$ denotes the dimensionality of associated variable $\phi$.
+Where $n_{\star}$ denotes the dimensionality of associated variable $\star$.
 
 
-The objective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty, while $\ell(x_k,y_k,u_k,r_k,s_k)$  is called a stage cost and its
+The objective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty, while $\ell_k(x_k,y_k,u_k,r_k,s_k)$  is called a stage cost and its
 purpose is to assign a cost to a particular choice of $x_k$, $y_k$, $u_k$, $r_k$ and $s_k$. For most of the building control applications the terminal penalty is omitted.
-The predictions of the state values are obtained from the state update equation~\eqref{eq:mpc_general_formal:xp}, while values of the predicted outputs are given by
-the output equation~\eqref{eq:mpc_general_formal:yp}.
+The predictions of the state values are obtained from the state update equation~\eqref{eq:mpc_general_formal:xp}, while values of the predicted outputs are given by the output equation~\eqref{eq:mpc_general_formal:yp}.
 Slack variables are defined as additional constraints~\eqref{eq:mpc_general_formal:s}, they ususally represent algebraic relations of state, output, or input variables.
 % 
 States, inputs and slack variables are subject to
@@ -133,37 +132,62 @@ constraints~\eqref{eq:mpc_general_formal:ub},~\eqref{eq:mpc_general_formal:xb}, 
 where sets  $\mathcal{X}$, $\mathcal{U}$ and $\mathcal{S}$ represent feasible subset of $\mathbb{R}^{n}$. 
 % 
 The initial conditions for the state variables are given by~\eqref{eq:mpc_general_formal:x0}, which are either  measured or estimated. 
-Eq.~\eqref{eq:mpc_general_formal:d0} and~\eqref{eq:mpc_general_formal:r0} represent initialization of the disturbance and reference parameters for the whole prediction horizon, obtained as a forecast.
+Eq.~\eqref{eq:mpc_general_formal:d0} and~\eqref{eq:mpc_general_formal:r0} represent initialization of the disturbances and references  for the whole prediction horizon, obtained as a forecast.
 % 
-For the sake of generality we denote by $\xi$ the vector that encapsulates all time-varying parameters
-of~\eqref{eq:mpc_general_formal}, i.e. the current states $x(t)$,
-current and future disturbances $d(t), \ldots, d(t+N T_s)$, and possibly other parameters such as comfort boundaries or reference signals which depend on the specific formulation.
+For the sake of generality we denote by $\xi$ the vector that encapsulates all initial conditions of~\eqref{eq:mpc_general_formal}, i.e. the current states $x(t)$, current and future disturbance variables $d(t), \ldots, d(t+N T_s)$, and possibly parameters such as comfort boundaries or reference signals which depend on the specific formulation.
 The parameter $T_s$ here represents the sampling time.
+Compression of all initial conditions into single vector $\xi$ is convenient for 
+compact  representation of MPC feedback law in the form $U = f_{MPC}(\xi)$,
+where $U = \begin{bmatrix} u_0 & u_1 & \cdots & u_{N-1} \end{bmatrix} $ is the vector of computed optimal control actions obtained as a solution of the problem~\eqref{eq:mpc_general_formal}.
+
+
 
 \section{MPC FORMULATION IN BUILDINGS: GRANTING A PHYSICAL MEANING }
 
-In Section~\ref{sec:control_notation} the abstract MPC formulation has been defined, 
-now physical meaning and ranges of variables have to be specified.
+In Section~\ref{sec:control_notation} the abstract MPC formulation has been defined, now physical meaning and ranges of variables and parameters have to be specified.
+% 
+For the sake of clarity, we make a distinction between the meaning of variable and parameter in this document.
+Variable represents a value which is computed by or is involved  in the model equations~\eqref{eq:mpc_general_formal:xp} and~\eqref{eq:mpc_general_formal:yp}. For this reason, we will denote the measured disturbances such as weather forecast a variable.
+Parameter on the other hand is a value which is not involved in model equations~\eqref{eq:mpc_general_formal:xp} and~\eqref{eq:mpc_general_formal:yp}. Parameters can be
+ either set up by the engineer (e.g., prediction horizon $N$, or reference  signals $r$), or can be known a priory during the design process (e.g., specific  heat capacity $c_p$), or continuously measured as time-varying signals (e.g., coefficient of performance $COP$, or price factor $p$).
+ There is one exception, which is slack variables $s$, technically they can be labeled as variables because they are computed within MPC.
+However, because they usually represent violations of particular constraints, they are only indirectly associated with physical domain variables via these constraints.
+For this reason to simplify the Tab.~\ref{tab:mpc_form:translation} by avoiding introduction of the auxiliary physical domain variables associated with slack variables (e.g., thermal discomfort) we chose to label the slack variables $s$ as parameters.
+
 Table~\ref{tab:mpc_form:translation} summarizes the most common
 variables used in building control and maps them with the abstract
-notation from the control engineering notation. 
+notation from the control engineering notation presented in previous section. 
 Because these variables are usually vectors, we indicate the
 $i$-th element of the vector variable via supercsript $i$,
 for instance the operative temperature in the $i$-th zone is denoted as $T_z^i$.
 Please note that presented mapping of  variables from physical domain to abstract domain generalizes most common cases found in the literature. However, less common 
 but technically feasible mapping can be applied in some specific cases, e.g. treating envelope temperatures as outputs or disturbance signals.
 
+
 An overview of the most common modifying and bounding parameters in building control together with their associated variables is presented in Table~\ref{tab:mpc_form:parameters:modifiers} and Table~\ref{tab:mpc_form:parameters:bounds}, respectively.
-These parameters can be treated either as constant numerical  or time-varying values. In the latter case the parameters can be technically labeled as reference or disturbance signals within the MPC formulation.
+These parameters can be treated either as constant numerical  or time-varying values. For example, in the latter case the parameters can represent reference $r$ within the MPC formulation.
+
+
+
 
 Table~\ref{tab:mpc_form:objectives} recaps the most common objectives used 
-in the MPC formulation. These objectives can be combined in a multi-objective
-function. Since the main objective of building control is the maximization of occupants comfort while using as little resources as possible,
-usually two conflicting terms are found: an energy-related term
-and a comfort-related term.   
+in the MPC formulation. These objectives can be combined in a multi-objective function. 
+% 
+Since the main objective of building control is the maximization of occupants comfort while using as little resources as possible,
+usually two conflicting terms are found: an energy minimization term
+and a comfort maximization term.  
+% 
+Eq.~\eqref{eq:mpc:objective:cost1} is an example of such
+ multi-objective function,
+where $||{Q_{\text{s}} s_{k}}||_2^2$ represents an arbitrary discomfort term in the form of the weighted squared 2-norm of the slack variables, and ${Q_{\text{u}} u_{k}}$ stands for the weighted linear energy term. The matrices $Q_{\text{s}}$ and $Q_{\text{u}}$ here stand for the weighting factors.
+\begin{equation}
+\min_{u_0, \ldots, u_{N-1}}  
+\sum_{k=0}^{N-1} (||{Q_{\text{s}} s_{k} }||_2^2
++ {Q_{\text{u}}  u_{k}}) \label{eq:mpc:objective:cost1}
+\end{equation}
+% 
  
-The energy used by the building stands for the sum of the energy of each
-HVAC component $Q^i_{\text{HVAC}}$.
+The energy used by the building stands for the sum of the energy used by each HVAC component $Q^i_{\text{HVAC}}$.
 Generally, the power $P^i_{\text{HVAC}}$ of $i$-th HVAC component can be calculated as the time integral of the
 ratio between the thermal power that it delivers $Q^i_{\text{HVAC}}$ and its efficiency $COP^i, EER^i$ or $\eta^i$. 
 These efficiencies are parameters that can be considered either constant or variable
@@ -175,13 +199,13 @@ as a time-varying (in electric-based components), constant (in fuel-based compon
 The emission factor $e^i$ converts the energy used into the associated $CO_2$ emissions 
 for the $i$-th component which can be variable for electric-based components,
 constant for fuel-based components and zero for renewable-based components.
-The renewable energy sources (RES) share $r^i$ represents the fraction of renewable
+The renewable energy sources (RES) share $RES^i$ represents the fraction of renewable
 energy coming from the  $i$-th component and depends on the RES share of the grid for
 electric-based components. The share is zero for fuel-based ones and for
 renewable-based components the share would be 100\%.
 % 
 The balance between the different objectives is typically adjusted
-by means of weighting factors $Q_{\phi}$ to give more or less priority to the associated objective term $\ell_{\phi}$ for a particular variable $\phi$. For example the penalization on control inputs $u$ can be by denoted by a weighting term $Q_{u}$.
+by means of weighting factors $Q_{\star}$ to give more or less priority to the associated objective term $\ell({\star})$ for a particular variable $\star$. For example the penalization on control inputs $u$ can be by denoted by a weighting term $Q_{u}$.
 
 In general, there are two types of constraints:
 inequality (control inputs range, comfort zones, etc.) and equality 
@@ -200,8 +224,7 @@ For example the thermal discomfort is typically evaluated via a slack variable $
 All constraints can be time-varying.
 
 % TODO: Q_i is conflicting notation with weights, keep using Q_{HVAC}^i
-% TODO: we could add units
-\begin{table}[h]
+\begin{table}[ht]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
 	\caption{MPC variables notation and translation between physical and abstract domain.}
@@ -215,8 +238,8 @@ All constraints can be time-varying.
 		\midrule
 		\multirow{8}{*}{\textbf{Temperatures [$^\circ C$]}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & -  & - & - \\ 
 		& $T_{\text{z}}$ & Zone operative temperatures  & - & $\bullet$ & -  & - \\
-		& $T_{\text{sup}}$ & Air/water supply temperatures &  - & - & $\bullet$ & -  \\
-		& $T_{\text{ret}}$ & Air/water return temperature &  - & - & $\bullet$ & - \\
+		& $T_{\text{sup}}$ & Air/water supply temperatures &  - & $\bullet$ & $\bullet$ & -  \\
+		& $T_{\text{ret}}$ & Air/water return temperature &  - & $\bullet$ & $\bullet$ & - \\
 		& $T_\text{e}$ & Ambient temperature &  - & - & - & $\bullet$ \\
 		& $T_\text{b}$ & Borefield wall temperature & $\bullet$ & - & - & - \\
 			& $T_\text{g}$ & Borefield undisturbed ground temperature & $\bullet$ & - & - & - \\
@@ -272,10 +295,10 @@ All constraints can be time-varying.
 
 
 \renewcommand{\arraystretch}{2}
-\begin{table}[h]
+\begin{table}[ht]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
-	\caption{MPC formulation parameters - modifiers.}
+	\caption{MPC formulation parameters - modifiers and auxiliary variables.}
 	\label{tab:mpc_form:parameters:modifiers}
 	\begin{tabular}{l|c|l|c}
 		\toprule
@@ -291,7 +314,7 @@ All constraints can be time-varying.
 		\midrule
 		Price factor & $p^i$ &  \makecell[l]{Conversion factor from energy \\ to monetary cost of component $i$} & $Q^i_{\text{HVAC}}$ \\
 		Emission factor & $e^i$ & \makecell[l]{Conversion factor from energy \\ to $CO_2$ emissions of component $i$} & $Q^i_{\text{HVAC}}$ \\
-		RES factor & $r^i$ & \makecell[l]{Share of renewable energy of \\ the considered component $i$} & $Q^i_{\text{HVAC}}$ \\
+		RES factor & $RES^i$ & \makecell[l]{Share of renewable energy of \\ the considered component $i$} & $Q^i_{\text{HVAC}}$ \\
 			\midrule
 		\textbf{Heat flow parameters}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
@@ -300,25 +323,26 @@ All constraints can be time-varying.
 		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
         \makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
-		&  $T_{z}, CO_{2}, PMV, \phi, E_{\text{v}}$\\
-		\makecell[l]{Weighting factor} & $Q_{\text{xx}}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & $x,y,u,d,r$ \\
-		\makecell[l]{Sampling time} & $T_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} & $x,y,u,d,r$  \\
-		\makecell[l]{Dimensionality quantifier} & $n_{\text{xx}}$ &  \makecell[l]{Cardinality of the vector elements} & all \\
+		&  all \\
+		\makecell[l]{Weighting factor} & $Q_{\star}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & all \\
+		\makecell[l]{Sampling time} & $T_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} & all  \\
+		\makecell[l]{Dimensionality quantifier} & $n_{\star}$ &  \makecell[l]{Cardinality of the vector elements} & all \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
 
 
+
 \renewcommand{\arraystretch}{2}
-\begin{table}[h]
+\begin{table}[ht]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
-	\caption{MPC formulation parameters - bounds.}
+	\caption{MPC formulation parameters - bounds and references $r$.}
 	\label{tab:mpc_form:parameters:bounds}
 		\begin{adjustwidth}{-1.5cm}{}
 	\begin{tabular}{l|c|l|c}
 		\toprule
-		\textbf{Comfort bounds}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
+		\textbf{Comfort bounds $r$}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
 		Temperature & $\underline{T_{\text{z}}},\overline{T_{\text{z}}}$ & \makecell[l]{Zone operative temperature  \\ comfort bounds } & $T_{\text{z}}$ \\
 		$CO_2$ concentration & $\underline{CO_2},\overline{CO_2}$ & \makecell[l]{$CO_2$ concentration comfort \\ bounds} & $CO_{2}$ \\
@@ -328,29 +352,30 @@ All constraints can be time-varying.
 		\bottomrule 
 		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-		Thermal power limit & $\underline{\dot{Q}^i_{\text{HVAC}}},\overline{\dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum thermal power of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		\makecell[l]{Rate of change of\\ thermal power rate}  & $\underline{\Delta \dot{Q}^i_{\text{HVAC}}},\overline{\Delta \dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Minimum/maximum rate of change of  thermal  \\ power  of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		\makecell[l]{Pump difference\\ pressure limit}   & $\underline{\Delta p^i},\overline{\Delta p^i}$ & \makecell[l]{Minimum/maximum diff. pressure \\  of the  $i$-th fan/pump} & $\Delta p^i$ \\
-		\makecell[l]{Rate of change of\\ pump difference pressure}   & $\underline{\Delta\Delta p^i},\overline{\Delta\Delta p^i}$ & \makecell[l]{Minimum/maximum rate of  change of \\ diff. pressure of the  $i$-th fan/pump} & $\Delta p^i$ \\
-		Pump speed limit & $\underline{ x^i_{\text{mov}}},\overline{ x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum  speed of \\  the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
-		\makecell[l]{Rate of change of\\ pump speed}  & $\underline{\Delta x^i_{\text{mov}}},\overline{\Delta x^i_{\text{mov}}}$ & \makecell[l]{Minimum/maximum rate of  change of \\ speed of the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
-		Valve position limits & $\underline{ x^i_{\text{val}}},\overline{ x^i_{\text{val}}}$ & \makecell[l]{Minimum/maximum position of \\  the  $i$-th valve} & $x^i_{\text{val}}$ \\
-		\makecell[l]{Rate of change of\\ valve position}  & $\underline{\Delta x^i_{\text{val}}},\overline{\Delta x^i_{\text{val}}}$ & \makecell[l]{Minimum/maximum change of \\ position of the  $i$-th valve} & $x^i_{\text{val}}$ \\
-		Damper position limits& $\underline{ x^i_{\text{dam}}},\overline{ x^i_{\text{dam}}}$ & \makecell[l]{Minimum/maximum position of \\  the  $i$-th damper} & $x^i_{\text{dam}}$ \\
+		Thermal power limit & $\underline{\dot{Q}^i_{\text{HVAC}}},\overline{\dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Min/max thermal power of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		\makecell[l]{Rate of change of\\ thermal power rate}  & $\underline{\Delta \dot{Q}^i_{\text{HVAC}}},\overline{\Delta \dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Min/max rate of change of  thermal  \\ power  of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		\makecell[l]{Pump difference\\ pressure limit}   & $\underline{\Delta p^i},\overline{\Delta p^i}$ & \makecell[l]{Min/max diff. pressure \\  of the  $i$-th fan/pump} & $\Delta p^i$ \\
+		\makecell[l]{Rate of change of\\ pump difference pressure}   & $\underline{\Delta\Delta p^i},\overline{\Delta\Delta p^i}$ & \makecell[l]{Min/max rate of  change of \\ diff. pressure of the  $i$-th fan/pump} & $\Delta p^i$ \\
+		Pump speed limit & $\underline{ x^i_{\text{mov}}},\overline{ x^i_{\text{mov}}}$ & \makecell[l]{Min/max  speed of \\  the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
+		\makecell[l]{Rate of change of\\ pump speed}  & $\underline{\Delta x^i_{\text{mov}}},\overline{\Delta x^i_{\text{mov}}}$ & \makecell[l]{Min/max rate of  change of \\ speed of the  $i$-th fan/pump} & $x^i_{\text{mov}}$ \\
+		Valve position limits & $\underline{ x^i_{\text{val}}},\overline{ x^i_{\text{val}}}$ & \makecell[l]{Min/max position of \\  the  $i$-th valve} & $x^i_{\text{val}}$ \\
+		\makecell[l]{Rate of change of\\ valve position}  & $\underline{\Delta x^i_{\text{val}}},\overline{\Delta x^i_{\text{val}}}$ & \makecell[l]{Min/max change of \\ position of the  $i$-th valve} & $x^i_{\text{val}}$ \\
+		Damper position limits& $\underline{ x^i_{\text{dam}}},\overline{ x^i_{\text{dam}}}$ & \makecell[l]{Min/max position of \\  the  $i$-th damper} & $x^i_{\text{dam}}$ \\
 		\makecell[l]{Rate of change of\\ damper position} 
-		& $\underline{\Delta x^i_{\text{dam}}},\overline{\Delta x^i_{\text{dam}}}$ & \makecell[l]{Minimum/maximum rate of  change of \\ position of the  $i$-th damper} & $x^i_{\text{dam}}$ \\
+		& $\underline{\Delta x^i_{\text{dam}}},\overline{\Delta x^i_{\text{dam}}}$ & \makecell[l]{Min/max rate of  change of \\ position of the  $i$-th damper} & $x^i_{\text{dam}}$ \\
 		\bottomrule 
 	\end{tabular}
 	\end{adjustwidth}
 \end{table}
 
+% TODO: add dimensions to variables and parameters?
 
 % TODO: add definition and use of mathematical norms, 1,2,inf
 \renewcommand{\arraystretch}{2.5}
-\begin{table}[h]
+\begin{table}[ht]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
-	\caption{Additive terms of MPC objective $\min  \sum_{k=0}^{N-1} \ell(x_k, y_k, u_k, d_k, r_k)$.}
+	\caption{Additive terms $\star$ of MPC objective $\min  \sum_{k=0}^{N-1} \star$.}
 	\label{tab:mpc_form:objectives}
 	\begin{tabular}{l|lll}
 		\toprule
@@ -359,18 +384,20 @@ All constraints can be time-varying.
 		\midrule
 % 		\textbf{Linguistic objective}  & \textbf{MPC formulation} \\
 		\midrule
-		Minimize energy use & linear  &  $  \sum_{i=1}^{n_u} \dfrac{u^{i}_{k}}{\eta^i}$ &  $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$ \\
-		Minimize cost & linear &  $  \sum_{i=1}^{n_u} p^i \dfrac{u^{i}_{k}}{\eta^i}$ & $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} p^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
-		Minimize $CO_2$ emissions & linear &  $  \sum_{i=1}^{n_u} e^i \dfrac{u^{i}_{k}}{\eta^i}$ &  $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}}  e^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
-		Maximise RES &  linear &  $  \sum_{i=1}^{n_u} (1-r^i) \dfrac{u^{i}_{k}}{\eta^i}$ & $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} (1-r^i) \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta^i}$  \\
-		Minimize discomfort &  quadratic &  $ \sum_{i=1}^{n_s} ||s^i_k||^2_2$ &  $ \sum_{i=1}^{n_{s^{T_{\text{z}}}}} ||s^{T_{\text{z}},i}_k||^2_2$  \\
+		Minimize energy use & linear  &  $ \sum_{i=1}^{n_u} u^{i}_{k}$ &  $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} \dot{Q}^{i}_{\text{HVAC},k}$ \\
+		Minimize power use & linear  &  $  \sum_{i=1}^{n_u} \dfrac{u^{i}_{k}}{\eta_k^i}$ &  $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta_k^i}$ \\
+		Minimize cost & linear &  $  \sum_{i=1}^{n_u} p_k^i \dfrac{u^{i}_{k}}{\eta_k^i}$ & $  \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} p_k^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta_k^i}$  \\
+		Minimize $CO_2$ emissions & linear &  $  \sum_{i=1}^{n_u} e_k^i \dfrac{u^{i}_{k}}{\eta_k^i}$ &  $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}}  e_k^i \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta_k^i}$  \\
+		Maximise RES &  linear &  $  \sum_{i=1}^{n_u} (1-RES_k^i) \dfrac{u^{i}_{k}}{\eta_k^i}$ & $ \sum_{i=1}^{n_{\dot{Q}_{\text{HVAC}}}} (1-RES_k^i) \dfrac{\dot{Q}^{i}_{\text{HVAC},k}}{\eta_k^i}$  \\
+			Minimize discomfort &  quadratic &  $  ||s_k||^2_2$ &  $ ||s^{T_{\text{z}}}_k||^2_2$  \\
+% 		Minimize discomfort &  quadratic &  $ \sum_{i=1}^{n_s} ||s^i_k||^2_2$ &  $ \sum_{i=1}^{n_{s^{T_{\text{z}}}}} ||s^{T_{\text{z}},i}_k||^2_2$  \\
 		Flexibility &  TBD & TBD  & TBD \\
 		\bottomrule 
 	\end{tabular}
 \end{table}
 
 \renewcommand{\arraystretch}{2.5}
-\begin{table}[h]
+\begin{table}[ht]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
 	\caption{MPC formulation constraints.}
