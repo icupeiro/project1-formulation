@@ -174,9 +174,9 @@ Equivalence of MPC formulations using physical notation and control engineering 
 		& $T^{\text{AHU}}_{\text{sup}}$ & Air supply temperatures AHU &  - & - & - & $\bullet$ \\
 		& $T^{\text{HP}}_{\text{sup}}$ & Water supply temperatures heat pump&  - & - & - & $\bullet$ \\
 		& $T^{\text{TABS}}_{\text{sup}}$ & Water supply temperatures TABS&  - & - & $\bullet$ & -  \\
-		& $T^{\text{FH}}_{\text{sup}}$ & Water supply temperatures floor heating&  - & - & $\bullet$ & -  \\
+% 		& $T^{\text{FH}}_{\text{sup}}$ & Water supply temperatures floor heating&  - & - & $\bullet$ & -  \\
 		& $T^{\text{TABS}}_{\text{ret}}$ & Water return temperature TABS &  - & - & - & $\bullet$ \\
-		& $T^{\text{FH}}_{\text{ret}}$ & Water return temperature floor heating &  - & - & - & $\bullet$  \\
+% 		& $T^{\text{FH}}_{\text{ret}}$ & Water return temperature floor heating &  - & - & - & $\bullet$  \\
 		& $T_\text{e}$ & Ambient temperature &  - & - & - & $\bullet$ \\
 		\midrule
 		\multirow{3}{*}{\textbf{Thermal power $[W]$}} 
@@ -191,7 +191,7 @@ Equivalence of MPC formulations using physical notation and control engineering 
 		\multirow{3}{*}{\textbf{\shortstack[l]{Component signals }}} 
 % 		& $x_{\text{HVAC}}$ & ON/OFF/Modulated signal of HVAC components $[\{0,1\},\%]$ & - & - & $\bullet$ & - \\
 		& $x_{\text{TABS}}$ & ON/OFF signal of TABS pump $[\{0,1\}]$ & - & - & $\bullet$ & - \\
-		& $x_{\text{FH}}$ & ON/OFF signal of floor heating pump $[\{0,1\}]$ & - & - & $\bullet$ & - \\
+% 		& $x_{\text{FH}}$ & ON/OFF signal of floor heating pump $[\{0,1\}]$ & - & - & $\bullet$ & - \\
 		& $x_{\text{val}}$ & Valve positions TABS $[\%]$ & - & - & $\bullet$ & - \\
 		& $x_{\text{heat}}$ & ON/OFF heating mode $[\{0,1\}]$ & - & - & $\bullet$ & - \\
 		& $x_{\text{cool}}$ & ON/OFF cooling mode $[\{0,1\}]$ & - & - & $\bullet$ & - \\
@@ -275,16 +275,74 @@ Equivalence of MPC formulations using physical notation and control engineering 
 % TODO MPC notation with physical vartiables
 
 
+The MPC minimizing  the energy consumption and  thermal discomfort 
+for Hollandsch Huys building is given as the following quadratic optimization problem using physical notation:
+\begin{subequations}
+\label{eq:mpc_general}
+\begin{align}
+ \min_{\dot{Q}_{\text{HVAC},0}, \ldots, \dot{Q}_{\text{HVAC},{N_{\text{c}}-1}},
+ s^{T_{\text{z}}}_0, \ldots, s^{T_{\text{z}}}_{N-1}} & \sum_{k=0}^{N-1}  
+ || s^{T_{\text{z}}}_k ||_{Q_\text{s}}^2 +  \sum_{k=0}^{N_{\text{c}}-1} COP_k p_k ||\dot{Q}_{\text{HVAC},k} ||_{Q_\text{u}}^2  &
+ \label{eq:mpc_general:cost}\\
+  \text{s.t.} \ & T_{k+1} = A T_k+ B \dot{Q}_{\text{HVAC},k} +E [\dot{Q}_{\text{rad},k}, \dot{Q}_{\text{occ},k}, T_{\text{e},k}]^T, & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:x} \\
+  & T_{\text{z},k} = C T_k + D \dot{Q}_{\text{HVAC},k}, & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:y} \\
+  & \underline{T}_{\text{z},k} - s^{T_{\text{z}}}_k \le T_{\text{z},k} \le \overline{T}_{\text{z},k} + s^{T_{\text{z}}}_k, & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:zone} \\
+   & \mathbf{0} \le s^{T_{\text{z}}}_k  ,  & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:lb_sk}\\
+    & \dot{Q}_{\text{HVAC},k} =  \begin{cases}
+    \dot{Q}_{\text{HVAC},k} & \text{if } k \leq N_{\text{c}}\\
+   \dot{Q}_{\text{HVAC},N_{\text{c}}}     & \text{otherwise}   \end{cases}, & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:move_block} \\
+  &  \underline{\dot{Q}}_{\text{HVAC},k} \le \dot{Q}_{\text{HVAC},k} \le \overline{\dot{Q}}_{\text{HVAC},k},  & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:ub}\\
+   & \dot{Q}_{\text{rad},k} =  \dot{Q}_{\text{rad}}(t+ k T_s), & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:d0} \\
+   & \dot{Q}_{\text{occ},k} = \dot{Q}_{\text{occ}}(t+ k T_s), & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:d0} \\
+   & T_{\text{e},k} = T_{\text{e}}(t+ k T_s), & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:d0} \\
+  & \underline{T}_{\text{z},k} =  \underline{T}_{\text{z}}(t+ k T_s), & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:r_low} \\
+    & \overline{T}_{\text{z},k} =  \overline{T}_{\text{z}}(t+ k T_s), & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:r_up} \\
+  & T_0 = \hat{T}(t) \label{eq:mpc_general:x0}
+%   & \forall k \in \{0, \ldots, N-1\}. \label{eq:mpc_general:k}
+\end{align}
+\end{subequations}
+where $\mathbb{N}_a^b = \{a, a+1, \ldots, b \}$ is a set of integers,
+$T_k$, $u_k$, $y_k$ and $d_k$ represent the values of the zone temperatures, 
+inputs, outputs and disturbances, respectively, 
+predicted at the $k$-th step of the prediction horizon $N$.
+The predictions are obtained from the LTI prediction
+model given by equations~\eqref{eq:mpc_general:x} and~\eqref{eq:mpc_general:y}.
+The $\underline{T}_{\text{z},k}$ and $\overline{T}_{\text{z},k}$ parameters represent the comfort band 
+given by the constraints~\eqref{eq:mpc_general:zone},
+where the variables $s^{T_{\text{z}}}_k$ are used as the slack variables of a comfort band violation.
+The min/max constraints for the control input amplitude are given by~\eqref{eq:mpc_general:ub}.
+For particular initial conditions~\eqref{eq:mpc_general:x0} and~\eqref{eq:mpc_general:d0}, 
+ the optimization computes the sequence $\dot{Q}_{\text{HVAC},k}^*, \ldots, \dot{Q}_{\text{HVAC},N_{\text{c}-1}}^*$ of control inputs that
+are optimal with respect to the quadratic objective function~\eqref{eq:mpc_general:cost}
+and the constraints.
+The term $\|a\|_Q^2$ in the objective function represents the weighted squared $2$-norm, i.e., $a^T Q a$,
+with the weighting matrices $Q_\text{s}$ and $Q_\text{u}$ given as positive 
+definite diagonal matrices.
+The first term of the quadratic cost function minimizes the square of the comfort violation,
+while the second term minimizes the square of the used energy.
+
+
+Due to the linearization of the model, the decision variables represent heat flows delivered to the building $\dot{Q}_{\text{HVAC},k}$. However, in practical setup, we are not able to directly control the heat flows. Instead, we need to optimally map the heat computed by MPC to the physical control variables. In particular, we can control $20$ two way valves of individual circuits of thermally activated building structures (TABS) denoted by variable $x_{\text{val}}$, and supply temperature for TABS denoted by $T^{\text{TABS}}_{\text{sup}}$. We compute these values by solving nonlinear optimization problem (NLP) with heat transfer equation, minimizing the difference between supply and return temperatures for TABS, opening  of the valves, and  penalizing the deviation from satisfaction of the heat transfer equation via slack variables $s$. Specific heat capacity of the water $c_p$ and nominal mass flow rates $\dot{m}_{\text{wat}}$ obtained from the technical sheets of the building are used as constant parameters. The measurements of return temperatures from TABS circuits $T^{\text{TABS}}_{\text{ret}}$, supply temperature from heat pump $T^{\text{HP}}_{\text{sup}}$ the the  and computed optimal heat flows $\dot{Q}_{\text{HVAC},k}$ are used as varying parameters for corresponding NLP:
+\begin{subequations}
+\label{eq:NLP_postprocess}
+\begin{align}
+ \min_{x_{\text{val}}, T_{\text{sup}}^{\text{TABS}}} & \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup}}^{\text{TABS}} - T_{\text{ret}}^{\text{TABS},i}) + x_{\text{val}}^i } + || s^{\text{TABS}} ||_{Q^{\text{TABS}}_{\text{s}}}^2  &
+ \label{eq:NLP_postprocess:cost}\\
+  \text{s.t.} \ & \dot{Q}_{\text{HVAC}} + s^{\text{TABS}} = x_{\text{val}} \ \dot{m}_{\text{wat}} \ c_p \ (T_{\text{sup}}^{\text{TABS}} -  T_{\text{ret}}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
+   &  T_{\text{ret}}^{\text{TABS}} \le T_{\text{sup}}^{\text{TABS}} \le T_{\text{sup}}^{\text{HP}}, \label{eq:NLP_postprocess:tsup_minmax}\\
+    & 0 \le x_{\text{val}} \le 1.   \label{eq:NLP_postprocess:valve_minmax}
+\end{align}
+\end{subequations}
 
 \section{MPC Formulation: Control Engineering Notation}\label{sec:control_notation}
 
 
 The MPC minimizing  the energy consumption and  thermal discomfort 
-for Hollandsch Huys building is given as the following quadratic optimization problem:
+for Hollandsch Huys building is given as the following quadratic optimization problem using control engineering notation:
 \begin{subequations}
 \label{eq:mpc_general}
 \begin{align}
- \min_{u_0, \ldots, u_{N_{\text{c}}-1}} & \sum_{k=0}^{N-1}  
+ \min_{u_0, \ldots, u_{N_{\text{c}}-1}, s_0, \ldots, s_{N-1}} & \sum_{k=0}^{N-1}  
  || s_k ||_{Q_\text{s}}^2 +  \sum_{k=0}^{N_{\text{c}}-1} COP_k p_k ||u_k ||_{Q_\text{u}}^2  &
  \label{eq:mpc_general:cost}\\
   \text{s.t.} \ & x_{k+1} = A x_k+ B u_k +E d_k, & k \in \mathbb{N}_{0}^{N-1} \label{eq:mpc_general:x} \\
@@ -322,14 +380,17 @@ definite diagonal matrices.
 The first term of the quadratic cost function minimizes the square of the comfort violation,
 while the second term minimizes the square of the used energy.
 % 
+
+% TODO
+Control engineering notation of NLP post-processing follows:
 \begin{subequations}
 \label{eq:NLP_postprocess}
 \begin{align}
- \min_{v, T_{\text{sup}}^{\text{TABS}}} & \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup}}^{\text{TABS}} - T_{\text{ret}}^{\text{TABS},i}) + v^i } + || s ||_{\QQ{s}}^2  &
+ \min_{x_{\text{val}}, T_{\text{sup}}^{\text{TABS}}} & \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup}}^{\text{TABS}} - T_{\text{ret}}^{\text{TABS},i}) + x_{\text{val}}^i } + || s^{\text{TABS}} ||_{Q^{\text{TABS}}_{\text{s}}}^2  &
  \label{eq:NLP_postprocess:cost}\\
-  \text{s.t.} \ & Q + s = v \ \dot{m}_{\text{nom}} \ cp \ (T_{\text{sup}}^{\text{TABS}} -  T_{\text{ret}}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
+  \text{s.t.} \ & \dot{Q}_{\text{HVAC}} + s^{\text{TABS}} = x_{\text{val}} \ \dot{m}_{\text{wat}} \ c_p \ (T_{\text{sup}}^{\text{TABS}} -  T_{\text{ret}}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
    &  T_{\text{ret}}^{\text{TABS}} \le T_{\text{sup}}^{\text{TABS}} \le T_{\text{sup}}^{\text{HP}}, \label{eq:NLP_postprocess:tsup_minmax}\\
-    & 0 \le v \le 1.   \label{eq:NLP_postprocess:valve_minmax}
+    & 0 \le x_{\text{val}} \le 1.   \label{eq:NLP_postprocess:valve_minmax}
 \end{align}
 \end{subequations}
 
