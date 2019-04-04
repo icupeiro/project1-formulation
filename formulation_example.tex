@@ -153,11 +153,30 @@ General description of the building is follosed by definition of key performance
 Equivalence of MPC formulations using physical notation and control engineering notation is demonstrated using translation template.
 
 \section{Building Description}\label{sec:building}
+Building envelope and HVAC.
+% 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.80 \textwidth]{fig/HH_building.eps}
+\caption{Hollandsch Huys office building.
+}
+\label{fig:approxMPC:TDNN}
+\end{figure}
+%
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.80 \textwidth]{fig/HH_HVAC.eps}
+\caption{Hollandsch Huys heating system scheme.
+}
+\label{fig:approxMPC:TDNN}
+\end{figure}
 
 
 \section{Variables and Parameters}\label{sec:variables}
-
-\begin{table}[ht]
+% 
+Variables and parameters used in Hollandsch Huys.
+% 
+\begin{table}[htbp!]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
 	\caption{MPC variables notation and translation between physical and abstract domain. }
@@ -199,12 +218,9 @@ Equivalence of MPC formulations using physical notation and control engineering 
 	\end{tabular}
 % 	 \end{adjustwidth}
 \end{table} 
-
-
-
-
+% 
 \renewcommand{\arraystretch}{2}
-\begin{table}[ht]
+\begin{table}[htbp]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
 	\caption{MPC formulation parameters - modifiers and auxiliary variables.}
@@ -233,11 +249,9 @@ Equivalence of MPC formulations using physical notation and control engineering 
 		\bottomrule 
 	\end{tabular}
 \end{table}
-
-
-
+% 
 \renewcommand{\arraystretch}{2}
-\begin{table}[ht]
+\begin{table}[htbp]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
 	\caption{MPC formulation parameters - bounds and references $r$.}
@@ -247,18 +261,14 @@ Equivalence of MPC formulations using physical notation and control engineering 
 		\toprule
 		\textbf{Comfort bounds $r$}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-		Temperature & $\underline{T_{\text{z}}},\overline{T_{\text{z}}}$ & \makecell[l]{Zone operative temperature  \\ comfort bounds } & $T_{\text{z}}$ \\
-% 		$CO_2$ concentration & $\underline{CO_2},\overline{CO_2}$ & \makecell[l]{$CO_2$ concentration comfort \\ bounds} & $CO_{2}$ \\
-% 		Predicted mean vote & $\underline{PMV},\overline{PMV}$ &  \makecell[l]{Predicted mean vote comfort \\ bounds} & $PMV$ \\
-% 		Humidity & $\underline{\phi},\overline{\phi}$ &  Humidity comfort bounds & $\phi$  \\
-% 		Illuminance & $\underline{E_{\text{v}}},\overline{E_{\text{v}}}$ & Illuminance comfort bounds & $E_{\text{v}}$  \\
+		Temperature & $\underline{T}_{\text{z}},\overline{T}_{\text{z}}$ & \makecell[l]{Zone operative temperature  \\ comfort bounds } & $T_{\text{z}}$ \\
 		\bottomrule 
 		\textbf{Component limitations}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-		Thermal power limit & $\underline{\dot{Q}^i_{\text{HVAC}}},\overline{\dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Min/max thermal power of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		\makecell[l]{Rate of change of\\ thermal power rate}  & $\underline{\Delta \dot{Q}^i_{\text{HVAC}}},\overline{\Delta \dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Min/max rate of change of  thermal  \\ power  of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
-		Valve position limits & $\underline{ x^i_{\text{val}}},\overline{ x^i_{\text{val}}}$ & \makecell[l]{Min/max position of \\  the  $i$-th valve} & $x^i_{\text{val}}$ \\
-		\makecell[l]{Rate of change of\\ valve position}  & $\underline{\Delta x^i_{\text{val}}},\overline{\Delta x^i_{\text{val}}}$ & \makecell[l]{Min/max change of \\ position of the  $i$-th valve} & $x^i_{\text{val}}$ \\
+		Thermal power limit & $\underline{\dot{Q}}^i_{\text{HVAC}},\overline{\dot{Q}}^i_{\text{HVAC}}$ & \makecell[l]{Min/max thermal power of \\ the $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+% 		\makecell[l]{Rate of change of\\ thermal power rate}  & $\underline{\Delta \dot{Q}^i_{\text{HVAC}}},\overline{\Delta \dot{Q}^i_{\text{HVAC}}}$ & \makecell[l]{Min/max rate of change of  thermal  \\ power  of the  $i$-th HVAC component} & $Q^i_{\text{HVAC}}$ \\
+		Valve position limits & $\underline{ x}^i_{\text{val}},\overline{ x}^i_{\text{val}}$ & \makecell[l]{Min/max position of \\  the  $i$-th valve} & $x^i_{\text{val}}$ \\
+% 		\makecell[l]{Rate of change of\\ valve position}  & $\underline{\Delta x^i_{\text{val}}},\overline{\Delta x^i_{\text{val}}}$ & \makecell[l]{Min/max change of \\ position of the  $i$-th valve} & $x^i_{\text{val}}$ \\
 		\bottomrule 
 	\end{tabular}
 % 	\end{adjustwidth}
@@ -266,7 +276,7 @@ Equivalence of MPC formulations using physical notation and control engineering 
 
 
 
-\section{KPIs and Constraints}\label{sec:variables}
+% \section{KPIs and Constraints}\label{sec:variables}
 
 
 \section{MPC Formulation: Physical Notation}\label{sec:physical_notation}
@@ -326,13 +336,24 @@ Due to the linearization of the model, the decision variables represent heat flo
 \begin{subequations}
 \label{eq:NLP_postprocess}
 \begin{align}
- \min_{x_{\text{val}}, T_{\text{sup}}^{\text{TABS}}} & \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup}}^{\text{TABS}} - T_{\text{ret}}^{\text{TABS},i}) + x_{\text{val}}^i } + || s^{\text{TABS}} ||_{Q^{\text{TABS}}_{\text{s}}}^2  &
+ \min_{x_{\text{val},k}, T_{\text{sup},k}^{\text{TABS}}} &  \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup},k}^{\text{TABS}} - T_{\text{ret},k}^{\text{TABS},i}) + x_{\text{val},k}^i } +  || s_{k}^{\text{TABS}} ||_{Q^{\text{TABS}}_{\text{s}}}^2 &
  \label{eq:NLP_postprocess:cost}\\
-  \text{s.t.} \ & \dot{Q}_{\text{HVAC}} + s^{\text{TABS}} = x_{\text{val}} \ \dot{m}_{\text{wat}} \ c_p \ (T_{\text{sup}}^{\text{TABS}} -  T_{\text{ret}}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
-   &  T_{\text{ret}}^{\text{TABS}} \le T_{\text{sup}}^{\text{TABS}} \le T_{\text{sup}}^{\text{HP}}, \label{eq:NLP_postprocess:tsup_minmax}\\
-    & 0 \le x_{\text{val}} \le 1.   \label{eq:NLP_postprocess:valve_minmax}
+  \text{s.t.} \ &  \dot{Q}_{\text{HVAC},k} + s_{k}^{\text{TABS}} = x_{\text{val},k} \ \dot{m}_{\text{wat}} \ c_p \ (T_{\text{sup},k}^{\text{TABS}} -  T_{\text{ret},k}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
+   &  T_{\text{ret},k}^{\text{TABS}} \le T_{\text{sup},k}^{\text{TABS}} \le T_{\text{sup},k}^{\text{HP}}, \label{eq:NLP_postprocess:tsup_minmax}\\
+    & \underline{x}^i_{\text{val}} \le x_{\text{val},k} \le \overline{x}^i_{\text{val}}.   \label{eq:NLP_postprocess:valve_minmax}
 \end{align}
 \end{subequations}
+
+% \begin{subequations}
+% \label{eq:NLP_postprocess}
+% \begin{align}
+%  \min_{x_{\text{val}}, T_{\text{sup},k}^{\text{TABS}}} & \sum_{k=0}^{N-1} \lrp{ \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup},k}^{\text{TABS}} - T_{\text{ret},k}^{\text{TABS},i}) + x_{\text{val},k}^i } +  || s_{k}^{\text{TABS}} ||_{Q^{\text{TABS}}_{\text{s}}}^2  }&
+%  \label{eq:NLP_postprocess:cost}\\
+%   \text{s.t.} \ &  \dot{Q}_{\text{HVAC},k} + s_{k}^{\text{TABS}} = x_{\text{val},k} \ \dot{m}_{\text{wat}} \ c_p \ (T_{\text{sup},k}^{\text{TABS}} -  T_{\text{ret},k}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
+%    &  T_{\text{ret},k}^{\text{TABS}} \le T_{\text{sup},k}^{\text{TABS}} \le T_{\text{sup},k}^{\text{HP}}, \label{eq:NLP_postprocess:tsup_minmax}\\
+%     & 0 \le x_{\text{val},k} \le 1.   \label{eq:NLP_postprocess:valve_minmax}
+% \end{align}
+% \end{subequations}
 
 \section{MPC Formulation: Control Engineering Notation}\label{sec:control_notation}
 
@@ -386,11 +407,11 @@ Control engineering notation of NLP post-processing follows:
 \begin{subequations}
 \label{eq:NLP_postprocess}
 \begin{align}
- \min_{x_{\text{val}}, T_{\text{sup}}^{\text{TABS}}} & \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup}}^{\text{TABS}} - T_{\text{ret}}^{\text{TABS},i}) + x_{\text{val}}^i } + || s^{\text{TABS}} ||_{Q^{\text{TABS}}_{\text{s}}}^2  &
+ \min_{x_{\text{val},k}, T_{\text{sup},k}^{\text{TABS}}} & \sum_{i=1}^{n_{\text{TABS}}} \lrp{(T_{\text{sup},k}^{\text{TABS}} - T_{\text{ret},k}^{\text{TABS},i}) + x_{\text{val},k}^i } + || s_{k}^{\text{TABS}} ||_{Q^{\text{TABS}}_{\text{s}}}^2  &
  \label{eq:NLP_postprocess:cost}\\
-  \text{s.t.} \ & \dot{Q}_{\text{HVAC}} + s^{\text{TABS}} = x_{\text{val}} \ \dot{m}_{\text{wat}} \ c_p \ (T_{\text{sup}}^{\text{TABS}} -  T_{\text{ret}}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
-   &  T_{\text{ret}}^{\text{TABS}} \le T_{\text{sup}}^{\text{TABS}} \le T_{\text{sup}}^{\text{HP}}, \label{eq:NLP_postprocess:tsup_minmax}\\
-    & 0 \le x_{\text{val}} \le 1.   \label{eq:NLP_postprocess:valve_minmax}
+  \text{s.t.} \ & u_k + s_{k}^{\text{TABS}} = x_{\text{val},k} \ \dot{m}_{\text{wat}} \ c_p \ (T_{\text{sup},k}^{\text{TABS}} -  T_{\text{ret},k}^{\text{TABS},i}), &  \label{eq:NLP_postprocess:heat_equation} \\
+   &  T_{\text{ret},k}^{\text{TABS}} \le T_{\text{sup},k}^{\text{TABS}} \le T_{\text{sup},k}^{\text{HP}}, \label{eq:NLP_postprocess:tsup_minmax}\\
+     & \underline{x}^i_{\text{val}} \le x_{\text{val},k} \le \overline{ x}^i_{\text{val}}.   \label{eq:NLP_postprocess:valve_minmax}
 \end{align}
 \end{subequations}
 
