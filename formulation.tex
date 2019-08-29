@@ -2,7 +2,7 @@
 % Kim Stockment, Conference Coordinator, Ray W. Herrick Laboratories, Purdue University, West Lafayette, IN, USA. 
 % Latest revision = 2016-02-23 
 
-\documentclass[10pt]{extarticle}
+\documentclass[10pt]{article}
 % Miktex users: require l3 packages
 %             : optional 3 packages
 \usepackage{amssymb,amsmath,multicol,titlesec,apacite,booktabs,tabto,url, multirow, makecell, eurosym}
@@ -20,8 +20,9 @@
 \usepackage[parfill]{parskip}
 \usepackage{graphicx}
 \usepackage[font=bf]{caption}
-
+\usepackage{siunitx}
 \usepackage{changepage}  % allows to use adjustwidth
+\usepackage{xcolor}
 
 \usepackage{titlesec} 
 %\titleformat{command}[shape]{format}{label}{sep}{before}[after]
@@ -41,32 +42,31 @@
 \pagestyle{fancy}
 \fancyhead[R]{\fontsize{12pt}{1em}\selectfont {{\textbf{Page \thepage}}}}
 \fancyhead[L]{}
-\fancyfoot[C]{IBPSA Project 1, September 2018}
+\fancyfoot[C]{IBPSA Project 1, September 2019}
 \renewcommand{\headrulewidth}{0pt} % Turn off the bar
 
 \newcommand\thefontsize[1]{{#1 The current font size is: \f@size pt\par}}
 
 
+
+% % % % % % % % % % % % % %  TITLE  % % % % % % % % % % % % % %
+
+\title{MPC formulation description template}
+
+
+\author{J\'an Drgo\v{n}a$^{1,2}$,  Iago Cupeiro Figueroa$^{1}$}
+\date{ ${1}$ Department of Mechanical Engineering,  KU Leuven, Belgium \\
+        {\tt\small \{jan.drgona,iago.cupeirofigueroa\}@kuleuven.be}  \\
+            {${2}$ Pacific Northwest National Laboratory, Richland, WA, USA \\
+        {\tt\small jan.drgona@pnnl.gov}} \\%
+        \vspace{0.2cm}
+    \today
+}
+
+
 \begin{document}
 	
-\begin{center}
-\vspace{0.2in}
-\noindent{\fontsize{14pt}{1em}\selectfont \textbf{MPC formulation description template}}\\[14pt]
-
-{\fontsize{11pt}{1.2em}\selectfont
- J\'an Drgo\v na\textsuperscript{1}, Iago Cupeiro Figueroa\textsuperscript{2}
-\\[11pt]
-
-KU Leuven\\
-Department of Mechanical Engineering - TME Division\\
-Thermal Systems Simulation  (The SySi) research group  \\[11pt]
-
-jan.drgona@kuleuven.be\textsuperscript{1},
-iago.cupeirofigueroa@kuleuven.be\textsuperscript{2} \\
-}
-\end{center}
-
-\vspace{0.5cm}
+	\maketitle
 
 
 \section*{ABSTRACT}
@@ -77,6 +77,7 @@ It has to be general.
 To this end, we choose the control engineering notation as our starting point,
 since it considers the formulation in a general way from an abstract point of view.
 From here, we move to a formulation with physical meaning based on the specific characteristics of buildings.
+
 
 %\section*{NOMENCLATURE}
 %
@@ -96,6 +97,17 @@ From here, we move to a formulation with physical meaning based on the specific 
 
 \section{CONTROL ENGINEERING NOTATION}\label{sec:control_notation}
 
+{\color{blue} 
+We build up the control engineering notation based on a general building model structure presented in
+Fig.~\ref{fig:Building_model}.
+The set of abstract domain variables represents the states of a system $x$, the heat flows to a system $u$, the disturbances  $d$, the controlled variables  $y$,  the actuator variables  $y$, the additional measured variables $m$, and the reference signals $r$. }
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.70 \textwidth]{fig/Building_model_MPC.eps}
+\caption{General structure of the building model with MPC.}
+\label{fig:Building_model}
+\end{figure}
+
 The general MPC formulation can be cast as an optimal control problem (OCP) in discrete time:
 \begin{subequations}
 	\label{eq:mpc_general_formal}
@@ -104,10 +116,13 @@ The general MPC formulation can be cast as an optimal control problem (OCP) in d
 	\label{eq:mpc_general_formal:cost}\\
 	\text{s.t.} \ & x_{k+1} = f(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:xp} \\
 	& y_{k} = g(x_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:yp} \\
-	& s_{k} = h(x_k, y_k, u_k, d_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:s} \\
+    &  u_{k} = f_{\text{HVAC}}(a_k,m_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:u} \\
+	& s_{k} = h(x_k, y_k, u_k, r_k),  & k \in \mathbb{N}_{0}^{N-1} & \label{eq:mpc_general_formal:s} \\
 	&  x_{k} \in \mathcal{X},  & k \in \mathbb{N}_{0}^{N-1}   \label{eq:mpc_general_formal:xb}\\
 	& u_{k} \in \mathcal{U}, & k \in \mathbb{N}_{0}^{N-1} 
 	\label{eq:mpc_general_formal:ub}\\
+    & a_{k} \in \mathcal{A}, & k \in \mathbb{N}_{0}^{N-1} 
+	\label{eq:mpc_general_formal:ab}\\
 	& s_{k} \in \mathcal{S}, & k \in \mathbb{N}_{0}^{N-1} 
 	\label{eq:mpc_general_formal:sb}\\
 	%   & \underline{x} \le x_k \le \overline{x}, \label{eq:mpc_general_formal:xb}\\
@@ -117,19 +132,21 @@ The general MPC formulation can be cast as an optimal control problem (OCP) in d
 	& x_0 = x(t),\label{eq:mpc_general_formal:x0} 
 	\end{align}
 \end{subequations}
-where $x_k \in \mathbb{R}^{n_x}$, $y_k \in \mathbb{R}^{n_y}$, $u_k \in \mathbb{R}^{n_u}$, $d_k \in \mathbb{R}^{n_d}$, $r_k \in \mathbb{R}^{n_r}$ and $s_k \in \mathbb{R}^{n_s}$ denote the values of states, outputs,
-inputs, disturbances, reference signals and slack variables respectively, at the $k$-th step of the prediction horizon $N$ with a sampling time $T_s$. 
+where $x_k \in \mathbb{R}^{n_x}$, $y_k \in \mathbb{R}^{n_y}$, $u_k \in \mathbb{R}^{n_u}$, $a_k \in \mathbb{R}^{n_a}$,
+$m_k \in \mathbb{R}^{n_m}$, $d_k \in \mathbb{R}^{n_d}$, $r_k \in \mathbb{R}^{n_r}$ and $s_k \in \mathbb{R}^{n_s}$ denote the values of states, outputs, envelope inputs, HVAC actuators, additional measured variables, disturbances, reference signals and slack variables respectively, at the $k$-th step of the prediction horizon $N$ with a sampling time $T_s$. 
 Where $n_{\star}$ denotes the dimensionality of associated variable $\star$.
 
 
 The objective function is given by~\eqref{eq:mpc_general_formal:cost} where   $\ell_N(x_N)$  represents the terminal penalty, while $\ell_k(x_k,y_k,u_k,r_k,s_k)$  is called a stage cost and its
 purpose is to assign a cost to a particular choice of $x_k$, $y_k$, $u_k$, $r_k$ and $s_k$. For most of the building control applications the terminal penalty is omitted.
 The predictions of the state values are obtained from the state update equation~\eqref{eq:mpc_general_formal:xp}, while values of the predicted outputs are given by the output equation~\eqref{eq:mpc_general_formal:yp}.
+{\color{blue} 
+The building envelope inputs are given by the HVAC model~\eqref{eq:mpc_general_formal:u}. }
 Slack variables are defined as additional constraints~\eqref{eq:mpc_general_formal:s}, they ususally represent algebraic relations of state, output, or input variables.
 % 
-States, inputs and slack variables are subject to
-constraints~\eqref{eq:mpc_general_formal:ub},~\eqref{eq:mpc_general_formal:xb}, and~\eqref{eq:mpc_general_formal:sb},
-where sets  $\mathcal{X}$, $\mathcal{U}$ and $\mathcal{S}$ represent feasible subset of $\mathbb{R}^{n}$. 
+States, envelope inputs, actuators, and slack variables are subject to
+constraints~\eqref{eq:mpc_general_formal:xb},~\eqref{eq:mpc_general_formal:ub},~\eqref{eq:mpc_general_formal:ab}, and~\eqref{eq:mpc_general_formal:sb},
+where sets  $\mathcal{X}$, $\mathcal{U}$, $\mathcal{A}$, and $\mathcal{S}$ represent feasible subset of $\mathbb{R}^{n}$. 
 % 
 The initial conditions for the state variables are given by~\eqref{eq:mpc_general_formal:x0}, which are either  measured or estimated. 
 Eq.~\eqref{eq:mpc_general_formal:d0} and~\eqref{eq:mpc_general_formal:r0} represent initialization of the disturbances and references  for the whole prediction horizon, obtained as a forecast.
@@ -147,12 +164,12 @@ where $U = \begin{bmatrix} u_0 & u_1 & \cdots & u_{N-1} \end{bmatrix} $ is the v
 In Section~\ref{sec:control_notation} the abstract MPC formulation has been defined, now physical meaning and ranges of variables and parameters have to be specified.
 % 
 For the sake of clarity, we make a distinction between the meaning of variable and parameter in this document.
-Variable represents a value which is computed by or is involved  in the model equations~\eqref{eq:mpc_general_formal:xp} and~\eqref{eq:mpc_general_formal:yp}. For this reason, we will denote the measured disturbances such as weather forecast a variable.
-Parameter on the other hand is a value which is not involved in model equations~\eqref{eq:mpc_general_formal:xp} and~\eqref{eq:mpc_general_formal:yp}. Parameters can be
- either set up by the engineer (e.g., prediction horizon $N$, or reference  signals $r$), or can be known a priory during the design process (e.g., specific  heat capacity $c_p$), or continuously measured as time-varying signals (e.g., coefficient of performance $COP$, or price factor $p$).
- There is one exception, which is slack variables $s$, technically they can be labeled as variables because they are computed within MPC.
-However, because they usually represent violations of particular constraints, they are only indirectly associated with physical domain variables via these constraints.
-For this reason to simplify the Tab.~\ref{tab:mpc_form:translation} by avoiding introduction of the auxiliary physical domain variables associated with slack variables (e.g., thermal discomfort) we chose to label the slack variables $s$ as parameters.
+Variable represents a value which is computed by or is dynamically influencing the model equations~\eqref{eq:mpc_general_formal:xp} and~\eqref{eq:mpc_general_formal:yp}. For this reason, we will denote the measured disturbances such as weather forecast a variable.
+Parameter on the other hand is a value which is not involved in model equations in a dynamical vay~\eqref{eq:mpc_general_formal:xp} and~\eqref{eq:mpc_general_formal:yp}. Parameters can be
+ either set up by the engineer (e.g., prediction horizon $N$, objective weights $Q_{\star}$), or can be known a priory during the design process (e.g., specific  heat capacity $c_p$), or even continuously measured as time-varying signals (e.g., coefficient of performance $COP$, or price factor $p$).
+The slack variables $s$, are labeled as variables because they are computed within MPC and usually depend on model dynamics.
+% However, slacks $s$ they usually represent violations of particular constraints, hence they are only indirectly associated with physical domain variables via these constraints.
+% For this reason to simplify the Tab.~\ref{tab:mpc_form:translation} by avoiding introduction of the auxiliary physical domain variables associated with slack variables (e.g., thermal discomfort) we chose to label the slack variables $s$ as parameters.
 
 Table~\ref{tab:mpc_form:translation} summarizes the most common
 variables used in building control and maps them with the abstract
@@ -161,7 +178,7 @@ Because these variables are usually vectors, we indicate the
 $i$-th element of the vector variable via supercsript $i$,
 for instance the operative temperature in the $i$-th zone is denoted as $T_z^i$.
 Please note that presented mapping of  variables from physical domain to abstract domain generalizes most common cases found in the literature. However, less common 
-but technically feasible mapping can be applied in some specific cases, e.g. treating envelope temperatures as outputs or disturbance signals.
+but technically feasible mapping can be applied in some specific cases, e.g. treating envelope temperatures as  disturbance signals.
 
 
 An overview of the most common modifying and bounding parameters in building control together with their associated variables is presented in Table~\ref{tab:mpc_form:parameters:modifiers} and Table~\ref{tab:mpc_form:parameters:bounds}, respectively.
@@ -226,71 +243,88 @@ All constraints can be time-varying.
 % TODO: Q_i is conflicting notation with weights, keep using Q_{HVAC}^i
 \begin{table}[ht]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
+	{\color{blue} 
 	\centering
 	\caption{MPC variables notation and translation between physical and abstract domain.}
 	\label{tab:mpc_form:translation}
 	\begin{adjustwidth}{-1cm}{}
-	\begin{tabular}{l|c|l|cccc}
+	\begin{tabular}{l|c|l|ccccccc}
 		\toprule
-		\multicolumn{3}{l}{\textbf{Physical domain}} &  \multicolumn{4}{r}{\textbf{Abstract domain}} \\
+        \multicolumn{3}{l}{\textbf{Physical domain}} &  \multicolumn{6}{r}{\textbf{Abstract domain}} \\
 		\toprule
-		\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$u$} & \textbf{$d$}  \\ 
+		\textbf{Variables} & \textbf{Symbol} & \textbf{Description} & \textbf{$x$} & \textbf{$y$} & \textbf{$m$} & \textbf{$a$} & \textbf{$u$} & \textbf{$d$}   & \textbf{$s$} \\ 
 		\midrule
-		\multirow{8}{*}{\textbf{Temperatures [$^\circ C$]}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & -  & - & - \\ 
-		& $T_{\text{z}}$ & Zone operative temperatures  & - & $\bullet$ & -  & - \\
-		& $T_{\text{sup}}$ & Air/water supply temperatures &  - & - & $\bullet$ & $\bullet$  \\
-		& $T_{\text{ret}}$ & Air/water return temperature &  - & - & $\bullet$ &  $\bullet$ \\
-		& $T_\text{e}$ & Ambient temperature &  - & - & - & $\bullet$ \\
-		& $T_\text{b}$ & Borefield wall temperature & $\bullet$ & - & - & - \\
-			& $T_\text{g}$ & Borefield undisturbed ground temperature & $\bullet$ & - & - & - \\
-			& $T_{\text{sg,}i}$ & Borefield surrounding ground temperature at distance $i$ & $\bullet$ & - & - & - \\
+		\multirow{8}{*}{\textbf{Temperatures [\SI{}{\celsius}]}} & $T$ & Envelope temperatures (wall, concrete, glazing...) & $\bullet$ & -  & - & - & -& -& -\\ 
+		& $T_{\text{z}}$ & Zone operative temperatures  & - & $\bullet$ & -  & - & -& -& -\\
+		& $T_{\text{sup}}^{\text{HVAC}}$ & Supply temperatures  of  HVAC  &  - & - & $\bullet$ & -  & -& -& -\\
+		& $T_{\text{ret}}^{\text{HVAC}}$ & Return temperatures  of  HVAC  &  - & - & $\bullet$ & - & -& -& - \\
+		& $T^{\text{HVAC}}_{\text{sp}}$ & Set-points of HVAC supply temperatures    &  - & - & - & $\bullet$ & - & -& -\\
+		& $T_\text{e}$ & Ambient temperature &  - & -& -& - & - & $\bullet$ & -\\
+		& $T_\text{b}$ & Borefield wall temperature & $\bullet$ & - & - & -  & - & - & - \\
+			& $T_\text{g}$ & Borefield  ground temperatures & $\bullet$ & - & - & -  & - & - & -\\
+% 			& $T_{\text{sg,}i}$ & Borefield surrounding ground temperature at distance $i$ & $\bullet$ & - & - & - \\
 		\midrule
-		\multirow{2}{*}{\textbf{Thermal energy $[J]$}} 
+		\multirow{3}{*}{\textbf{Thermal energy $[J]$}} 
 		% 		& $Q$ & Total heat flow  of HVAC components & - & - & $\bullet$ & -  \\
-		& $Q_{\text{HVAC}}$ & Thermal energy of the HVAC components  & - & - &  $\bullet$ & - \\
-		& $Q_{\text{b}}$ & Thermal energy injected/extracted into/from the borefield & - & - & $\bullet$ & -  \\
+		& $Q_{\text{HVAC}}$ & Thermal energy of the HVAC components  & - & -&  $\bullet$ & - & - &- & - \\
+		& $Q_{\text{b}}$ & \makecell[l]{Thermal energy injected/extracted \\ into/from the borefield} & - & - & $\bullet$ & - & - & - & -  \\
 		\midrule
 		\multirow{5}{*}{\textbf{Thermal power $[W]$}} 
 % 		& $Q$ & Total heat flow  of HVAC components & - & - & $\bullet$ & -  \\
-		& $\dot{Q}_{\text{HVAC}}$ & Thermal power of  HVAC components  & - & - &  $\bullet$ &- \\
-		& $\dot{Q}_{\text{rad}}$ & Solar radiation & - & - & - & $\bullet$  \\
-		& $\dot{Q}_{\text{occ}}$ & Occupancy internal gains & - & - & - & $\bullet$  \\
-		& $\dot{Q}_{\text{lig}}$ & Lighting internal gains & - & - & $\bullet$ & $\bullet$  \\
-		& $\dot{Q}_{\text{app}}$ & Appliances internal gains & - & - & $\bullet$ & $\bullet$  \\
+		& $\dot{Q}_{\text{HVAC}}$ & Thermal power of  HVAC components  & - & -& -& - &  $\bullet$ &- & - \\
+		& $\dot{Q}_{\text{rad}}$ & Solar radiation & - & - & - & - & - & $\bullet$ & - \\
+		& $\dot{Q}_{\text{occ}}$ & Occupancy internal gains  & - & - & - & - & - & $\bullet$ & - \\
+		& $\dot{Q}_{\text{lig}}$ & Lighting internal gains & - & - & - & -  & $\bullet$ & $\bullet$ & -  \\
+		& $\dot{Q}_{\text{app}}$ & Appliances internal gains & - & - & - & -  & $\bullet$ & $\bullet$ & -  \\
 		\midrule
 		\multirow{3}{*}{\textbf{Electrical energy $[J]$}} 
 		% 	& $P$ & Total power  of HVAC components & - & - & $\bullet$ & - \\
-		& $E_{\text{HVAC}}$ & Electrical energy used by HVAC components & - & - &  $\bullet$ &- \\
-		& $E_{\text{lig}}$ & Electrical energy used by lighting & - & - & $\bullet$ & $\bullet$ \\
-		& $E_{\text{app}}$ & Electrical energy used by appliances & - & - & $\bullet$ & $\bullet$ \\
+		& $E_{\text{HVAC}}$ & Electrical energy used by HVAC components & - & - &  $\bullet$ &-  & -  & -  & - \\
+		& $E_{\text{lig}}$ & Electrical energy used by lighting & - & - & $\bullet$  & -  & -  & -  & -  \\
+		& $E_{\text{app}}$ & Electrical energy used by appliances & - & - & $\bullet$  & -  & -  & -  & - \\
 		\midrule
 		\multirow{3}{*}{\textbf{Electrical power $[W]$}} 
 % 	& $P$ & Total power  of HVAC components & - & - & $\bullet$ & - \\
-		& $P_{\text{HVAC}}$ & Power of HVAC components & - & - &  $\bullet$ &- \\
-		& $P_{\text{lig}}$ & Lighting power & - & - & $\bullet$ & $\bullet$ \\
-		& $P_{\text{app}}$ & Appliances power & - & - & $\bullet$ & $\bullet$ \\
+		& $P_{\text{HVAC}}$ & Power of HVAC components & - & -  &  $\bullet$ &-  & -& -& -\\
+		& $P_{\text{lig}}$ & Lighting power & - & -  &  $\bullet$ &-  & -& -& -\\
+		& $P_{\text{app}}$ & Appliances power & - & -  &  $\bullet$ &-  & -& -& -\\
 \midrule
-		\multirow{2}{*}{\textbf{Mass flows $[kg/s]$}} &
-		$\dot{m}_{\text{wat}}$ & Water mass flow & - & - & $\bullet$ &  $\bullet$ \\
-		& $\dot{m}_{\text{air}}$ & Air mass flow & - & - & $\bullet$ &  $\bullet$ \\
+		\multirow{1}{*}{\textbf{Mass flows $[kg/s]$}} &
+		$\dot{m}_{\text{HVAC}}$ & Water/air mass flow rates of HVAC & - & - & $\bullet$ &  $\bullet$ & -  & -  & -  \\
+% 		& $\dot{m}_{\text{air}}$ & Air mass flow & - & - & $\bullet$ &  $\bullet$  & -  & -  & - \\
 		\midrule
 		\multirow{5}{*}{\textbf{\shortstack[l]{Component signals }}} 
 % 		& $T^{set}_{\text{sup}}$ & Supply system set-points & - & - & $\bullet$ & - \\
 % 		& $T^{set}_{z}$ & Zone set-point & - & - & $\bullet$ & - \\
-		& $x_{\text{HVAC}}$ & ON/OFF/Modulated signal of HVAC components $[\{0,1\},\%]$ & - & - & $\bullet$ & - \\
-		& $\Delta p$ & Pump/fan difference pressure $[kPa]$ & - & - & $\bullet$ & - \\
-		& $x_{\text{mov}}$ & Pump/fan speed signal $[\%,kPa]$ & - & - & $\bullet$ & - \\
-		& $x_{\text{val}}$ & Valve positions $[\%]$ & - & - & $\bullet$ & - \\
-		& $x_{\text{dam}}$ & Damper positions $[\%]$ & - & - & $\bullet$ & - \\
+		& $x_{\text{HVAC}}$ & \makecell[l]{ON/OFF/Modulated signal of \\ HVAC components $[\{0,1\},\%]$ }& - & - & -  & $\bullet$ & -  & -  & - \\
+		& $\Delta p$ & Pump/fan difference pressure $[kPa]$ & - & - & -  & $\bullet$ & -  & -  & - \\
+		& $x_{\text{mov}}$ & Pump/fan speed signal $[\%,kPa]$ & - & - & -  & $\bullet$ & -  & -  & - \\
+		& $x_{\text{val}}$ & Valve positions $[\%]$  & - & - & -  & $\bullet$ & -  & -  & - \\
+		& $x_{\text{dam}}$ & Damper positions $[\%]$ & - & - & -  & $\bullet$ & -  & -  & - \\
 		\midrule
 		\multirow{4}{*}{\textbf{\shortstack[l]{Indoor Environmental \\ Quality (IEQ)}}} &
-		$PMV$ & Predicted mean vote $[-]$ & - & $\bullet$ & - & - \\
-		& $CO_2$ & $CO_2$ concentration in air $[ppm]$ & - & $\bullet$ & - & $\bullet$ \\
-		& $\phi$ & Relative humidity  $[\%]$ & - & $\bullet$ & - & $\bullet$ \\
-		& $E_{\text{v}}$ & Illuminance $[lx]$ & - & $\bullet$ & - & $\bullet$ \\
+		$PMV$ & Predicted mean vote $[-]$ & - & $\bullet$ & - & - & -& -& -\\
+		& $CO_2$ & $CO_2$ concentration in air $[ppm]$ & - & $\bullet$ & - & - & -& -& -\\
+		& $\phi$ & Relative humidity  $[\%]$ & - & $\bullet$ & - & - & -& -& -\\
+		& $E_{\text{v}}$ & Illuminance $[lx]$ & - & $\bullet$ & - & - & -& -& -\\
+			\midrule
+		\multirow{6}{*}{\textbf{Constraints violations}} 
+		 &
+		$s^{\star}$ & Violations of constraints on variable $\star$ [-] & - &- &- & - & - & - & $\bullet$ \\
+		&
+		$s^{T_{\text{z}}}$ & Violations of thermal comfort zones [\SI{}{\celsius}] & - &- &- & - & - & - & $\bullet$ \\
+		&
+		$s^{PMV}$ & Violations of PMV zones [-] & - &- &- & - & - & - & $\bullet$ \\
+		&
+		$s^{CO_2}$ & Violations of $CO_2$  concentration limits $[ppm]$ & - &- &- & - & - & - & $\bullet$ \\
+		&
+		$s^{\phi}$ & Violations of relative humidity  limits $[\%]$ & - &- &- & - & - & - & $\bullet$ \\
+		&
+		$s^{E_{\text{v}}}$ & Violations of illuminance  limits $[lx]$ & - &- &- & - & - & - & $\bullet$ \\
 		\bottomrule 
 	\end{tabular}
 	 \end{adjustwidth}
+	 }
 \end{table} 
 
 
@@ -298,17 +332,17 @@ All constraints can be time-varying.
 \begin{table}[ht]
 	% Suppressing floating placement of tables/figures in LaTeX is generally deprecated. 
 	\centering
-	\caption{MPC formulation parameters - modifiers and auxiliary variables.}
+	\caption{MPC formulation parameters - modifiers and tuning parameters.}
 	\label{tab:mpc_form:parameters:modifiers}
 	\begin{tabular}{l|c|l|c}
 		\toprule
 		\textbf{Energy efficiencies}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-		\makecell[l]{Coefficient of \\ performance} & $COP^i$ &  \makecell[l]{Coefficient of performance \\ of heat pump $i$} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
-		\makecell[l]{Energy efficiency \\ ratio} & $EER^i$ & \makecell[l]{Cooling efficiency of \\ air conditioning system $i$} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
-		Efficiency & $\eta^i$ & \makecell[l]{Efficiency of other  $i$-th system} & $T_{sup}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
-		\makecell[l]{Seasonal coefficient of \\ performance} & $SCOP^i$ &  \makecell[l]{Seasonal coefficient of performance \\ of heat pump $i$} & $T_{sup}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$ \\
-		\makecell[l]{Seasonal energy efficiency \\ ratio} & $SEER^i$ & \makecell[l]{Seasonal cooling efficiency of \\ air conditioning system $i$} & $T_{sup}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$  \\
+		\makecell[l]{Coefficient of \\ performance} & $COP^i$ &  \makecell[l]{Coefficient of performance \\ of heat pump $i$} & $T_{\text{sup}}^{\text{HVAC}}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		\makecell[l]{Energy efficiency \\ ratio} & $EER^i$ & \makecell[l]{Cooling efficiency of \\ air conditioning system $i$} & $T_{\text{sup}}^{\text{HVAC}}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		Efficiency & $\eta^i$ & \makecell[l]{Efficiency of other  $i$-th system} & $T_{\text{sup}}^{\text{HVAC}}, \dot{Q}^i_{\text{HVAC}}, P^i_{\text{HVAC}}$ \\
+		\makecell[l]{Seasonal coefficient of \\ performance} & $SCOP^i$ &  \makecell[l]{Seasonal coefficient of performance \\ of heat pump $i$} & $T_{\text{sup}}^{\text{HVAC}}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$ \\
+		\makecell[l]{Seasonal energy efficiency \\ ratio} & $SEER^i$ & \makecell[l]{Seasonal cooling efficiency of \\ air conditioning system $i$} & $T_{\text{sup}}^{\text{HVAC}}, Q^i_{\text{HVAC}}, E^i_{\text{HVAC}}$  \\
 		\midrule
 		\textbf{Other energy factors}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
@@ -318,14 +352,14 @@ All constraints can be time-varying.
 			\midrule
 		\textbf{Heat flow parameters}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-		Specific heat capacity & $c_p^i$ & \makecell[l]{Specific heat capacity of \\ $i$-th medium} & $T_{sup}, T_{ret}, \dot{m}_{\text{wat}}, \dot{m}_{\text{air}}, \dot{Q}^i_{\text{HVAC}}$ \\
+		Specific heat capacity & $c_p^i$ & \makecell[l]{Specific heat capacity of \\ $i$-th medium} & $T_{\text{sup}}^{\text{HVAC}}, T_{\text{ret}}^{\text{HVAC}}, \dot{m}_{\text{wat}}, \dot{m}_{\text{air}}, \dot{Q}^i_{\text{HVAC}}$ \\
 		\midrule
-		\textbf{Auxiliary parameters}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
+		\textbf{Tuning parameters}  & \textbf{Symbol} &  \textbf{Description} & \textbf{Associated variables} \\
 		\midrule
-        \makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
-		&  all \\
+%         \makecell[l]{Slack variable} & $s$ &  \makecell[l]{Used to soften the constraints, usually \\ for the given comfort requirement} 
+% 		&  all \\
 		\makecell[l]{Weighting factor} & $Q_{\star}$ &  \makecell[l]{Weighting for the particular term \\ in the objective function} & all \\
-		\makecell[l]{Sampling time} & $T_s$ &  \makecell[l]{Time-step used in the \\ optimization problem} & all  \\
+		\makecell[l]{Sampling time} & $T_{s}$ &  \makecell[l]{Time-step used in the \\ optimization problem} & all  \\
 		\makecell[l]{Dimensionality quantifier} & $n_{\star}$ &  \makecell[l]{Cardinality of the vector elements} & all \\
 		\bottomrule 
 	\end{tabular}
@@ -408,7 +442,8 @@ All constraints can be time-varying.
 		\textbf{Linguistic constraint}  &  \multicolumn{3}{c}{\textbf{MPC formulation}} \\
 		& Class &  Control notation &  Physical notation \\
 		\midrule
-		Model dynamics & hard equality & $ x_{k+1} = f(x_k,u_k,d_k) $  & $ T_{k+1} = f(T_k,\dot{Q}_{\text{HVAC},k},T_{\text{e},k},\dot{Q}_{\text{rad},k},\dot{Q}_{\text{occ},k},\dot{Q}_{\text{lig},k}) $ \\ 
+		Envelope dynamics & hard equality & $ x_{k+1} = f(x_k,u_k,d_k) $  & $ T_{k+1} = f(T_k,\dot{Q}_{\text{HVAC},k},T_{\text{e},k},\dot{Q}_{\text{rad},k},\dot{Q}_{\text{occ},k},\dot{Q}_{\text{lig},k}) $ \\ 
+		{\color{blue} HVAC model } & hard equality & $ u_{k} = f_{\text{HVAC}}(a_k,m_k) $  & $ \dot{Q}_{\text{HVAC},k} = f_{\text{HVAC}}(\dot{m}_{\text{HVAC}}, T_{\text{sup}}^{\text{HVAC}},T_{\text{ret}}^{\text{HVAC}},P_{\text{HVAC}}) $ \\ 
 		Component limitations & hard inequality & $ \underline{u}_k \le u_k \le \overline{u}_k  $  & $ \underline{\dot{Q}_{\text{HVAC}}}_k  \le \dot{Q}_{\text{HVAC},k}  \le \overline{\dot{Q}_{\text{HVAC}}}_k  $ \\ 
 		Component difference & hard equality & $\Delta u_k = u_{k-1} - u_k $  & $\Delta \dot{Q}_{\text{HVAC},k} = \dot{Q}_{\text{HVAC},k-1} - \dot{Q}_{\text{HVAC},k} $  \\ 
 		Component rate of change & hard inequality & $ \underline{\Delta u}_k   \le \Delta u_k  \le \overline{\Delta u}_k  $ & $ \underline{\Delta \dot{Q}_{\text{HVAC}}}_k   \le \Delta \dot{Q}_{\text{HVAC},k}  \le \overline{\Delta \dot{Q}_{\text{HVAC}}}_k  $ \\ 
